@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>멘탈케어 대시보드</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard">
+            <header class="dashboard-header">
+                <h1><i class="fas fa-heart"></i> 멘탈케어 대시보드</h1>
+                <div class="user-info">
+                    <span id="username"></span>님
+                    <button id="logoutBtn" class="btn btn-secondary">로그아웃</button>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <!-- 우울 수치 모니터링 카드 -->
+                <div class="status-card">
+                    <h3><i class="fas fa-chart-line"></i> 현재 우울 수치</h3>
+                    <div class="depression-meter">
+                        <div class="meter-value" id="currentScore">-</div>
+                        <div class="meter-label">/ 10</div>
+                    </div>
+                    <div class="depression-status" id="depressionStatus">
+                        <span class="status-text">분석 중...</span>
+                    </div>
+                </div>
+
+                <!-- 네비게이션 메뉴 -->
+                <div class="nav-menu">
+                    <button class="nav-btn active" data-tab="chat">
+                        <i class="fas fa-comments"></i> AI 챗봇
+                    </button>
+                    <button class="nav-btn" data-tab="career">
+                        <i class="fas fa-briefcase"></i> 커리어 컨설팅
+                    </button>
+                    <button class="nav-btn" data-tab="history">
+                        <i class="fas fa-history"></i> 대화 기록
+                    </button>
+                </div>
+
+                <!-- 챗봇 탭 -->
+                <div class="tab-content active" id="chat-tab">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="bot-message">
+                                <div class="message-content">
+                                    안녕하세요! 저는 당신의 멘탈케어를 도와드리는 AI 챗봇입니다. 
+                                    오늘 기분은 어떠신가요? 무엇이든 편하게 말씀해주세요.
+                                </div>
+                                <div class="message-time">방금 전</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <div class="input-group">
+                                <button class="voice-btn" id="voiceBtn" title="음성 입력">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                                <input type="text" id="messageInput" placeholder="메시지를 입력하세요..." maxlength="500">
+                                <button class="send-btn" id="sendBtn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                            <div class="audio-controls" id="audioControls" style="display: none;">
+                                <button class="play-btn" id="playBtn" title="음성 재생">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 커리어 컨설팅 탭 -->
+                <div class="tab-content" id="career-tab">
+                    <div class="career-container">
+                        <h3><i class="fas fa-user-tie"></i> 가상 이력서 작성</h3>
+                        <form id="careerForm" class="career-form">
+                            <div class="form-group">
+                                <label>이름</label>
+                                <input type="text" id="resumeName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>이메일</label>
+                                <input type="email" id="resumeEmail" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>전화번호</label>
+                                <input type="tel" id="resumePhone" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>이력서 내용 (자연어로 자유롭게 작성해주세요)</label>
+                                <textarea id="resumeText" rows="10" placeholder="예시:
+저는 컴퓨터공학을 전공한 개발자입니다. 3년간 웹 개발 경험이 있으며, 주로 React와 Node.js를 사용해서 풀스택 개발을 해왔습니다. 
+
+주요 프로젝트로는 전자상거래 플랫폼을 개발했고, 사용자 경험을 개선하여 매출을 30% 증가시켰습니다. 또한 팀 리더로서 5명의 개발자를 관리하며 애자일 방법론을 도입했습니다.
+
+기술적으로는 JavaScript, Python, React, Node.js, MongoDB, AWS에 익숙하고, 영어로 업무 커뮤니케이션이 가능합니다. 
+
+앞으로는 AI/ML 분야로 확장하고 싶어하며, 데이터 사이언스 관련 스킬을 쌓고 싶습니다." required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-magic"></i> AI 커리어 컨설팅 받기
+                            </button>
+                        </form>
+                        
+                        <div class="consultation-result" id="consultationResult" style="display: none;">
+                            <h4><i class="fas fa-lightbulb"></i> AI 커리어 컨설팅 결과</h4>
+                            <div class="result-content" id="resultContent"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 대화 기록 탭 -->
+                <div class="tab-content" id="history-tab">
+                    <div class="history-container">
+                        <h3><i class="fas fa-chart-bar"></i> 우울 수치 변화</h3>
+                        <div class="chart-container">
+                            <canvas id="depressionChart" width="400" height="200"></canvas>
+                        </div>
+                        
+                        <div class="history-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">현재 점수</span>
+                                <span class="stat-value" id="currentDepressionScore">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">평균 점수</span>
+                                <span class="stat-value" id="averageDepressionScore">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">총 대화 수</span>
+                                <span class="stat-value" id="totalChats">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-chats">
+                            <h4><i class="fas fa-comments"></i> 최근 대화</h4>
+                            <div class="chat-list" id="chatList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
+
