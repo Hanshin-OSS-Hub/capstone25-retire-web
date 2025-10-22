@@ -54,8 +54,8 @@ ai 컨설팅 ok // 기초적인 텍스트 출력물은 나오지만 디벨롭 �
 
 ### 1. 저장소 클론
 ```bash
-git clone https://github.com/your-username/mentalcare-web-app.git
-cd mentalcare-web-app
+git clone https://github.com/Hanshin-OSS-Hub/capstone25-retire-web.git
+cd capstone25-retire-web
 ```
 
 ### 2. 가상환경 생성 및 활성화
