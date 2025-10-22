@@ -1,6 +1,6 @@
-# 🧠 멘탈케어 웹 애플리케이션
+# 🌟 RetireWeb
 
-AI 챗봇과 커리어 컨설팅을 통한 종합적인 멘탈케어 서비스입니다.
+은퇴 후 AI 챗봇과 커리어 컨설팅을 통한 종합적인 멘탈케어 플랫폼입니다.
 
 > **현재 상태**: 
 로그인 구현 ok
@@ -133,7 +133,7 @@ http://localhost:8000
 ## 📁 프로젝트 구조
 
 ```
-mentalcare-web-app/
+retireweb/
 ├── main.py                 # FastAPI 애플리케이션 메인 파일
 ├── requirements.txt        # Python 의존성
 ├── .env                   # 환경 변수 (생성 필요)
