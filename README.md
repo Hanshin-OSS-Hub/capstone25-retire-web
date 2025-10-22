@@ -72,6 +72,13 @@ pip install -r requirements.txt
 ### 4. 환경 변수 설정
 `.env` 파일을 생성하고 다음 내용을 추가하세요:
 
+```bash
+# .env.example 파일을 복사하여 .env 파일 생성
+cp .env.example .env
+```
+
+그 후 `.env` 파일에서 실제 API 키 값들을 입력하세요:
+
 ```env
 # MongoDB 설정
 MONGODB_URI=mongodb://localhost:27017
@@ -79,7 +86,6 @@ DATABASE_NAME=mentalcare_app
 
 # JWT 설정
 SECRET_KEY=your-secret-key-here
-ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 # OpenAI API 설정
@@ -87,7 +93,13 @@ OPENAI_API_KEY=your-openai-api-key-here
 
 # Supertone API 설정 (선택사항)
 SUPERTONE_API_KEY=your-supertone-api-key-here
+SUPERTONE_API_URL=https://supertoneapi.com/v1/text-to-speech
 ```
+
+**⚠️ 보안 주의사항**: 
+- `.env` 파일은 절대 Git에 커밋하지 마세요
+- 실제 API 키는 `.env` 파일에만 저장하세요
+- `.env.example` 파일은 안전한 템플릿입니다
 
 ### 5. MongoDB 실행
 ```bash
