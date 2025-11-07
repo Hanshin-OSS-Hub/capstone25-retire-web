@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  font-size: 18px; /* 노인 친화적 기본 폰트 크기 */
+  line-height: 1.6; /* 읽기 쉬운 줄 간격 */
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* 커스텀 스타일 */
+.gradient-bg {
+  background: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 50%, #dcfce7 100%);
+}
+
+/* 반응형 유틸리티 */
+.container-responsive {
+  @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.card-responsive {
+  @apply bg-white rounded-lg shadow-lg p-3 sm:p-6 lg:p-8;
+}
+
+/* 노인 친화적 스타일 */
+.elderly-friendly {
+  font-size: 20px;
+  line-height: 1.8;
+}
+
+.elderly-friendly h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.elderly-friendly h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.elderly-friendly h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.elderly-friendly button {
+  min-height: 56px; /* 최소 터치 타겟 크기 */
+  min-width: 56px;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 14px 24px;
+}
+
+.elderly-friendly input,
+.elderly-friendly textarea {
+  font-size: 18px;
+  padding: 16px 20px;
+  min-height: 56px;
+  border-width: 2px;
+}
+
+.elderly-friendly label {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.elderly-friendly .link {
+  font-size: 18px;
+  text-decoration: underline;
+  font-weight: 600;
+}

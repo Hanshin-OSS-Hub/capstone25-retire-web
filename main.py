@@ -1,12 +1,11 @@
 from fastapi import FastAPI, HTTPException, Depends, status, UploadFile, File
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, EmailStr
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import os
 from typing import Optional, List
 import uvicorn
@@ -31,15 +30,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 정적 파일 서빙
-app.mount("/static", StaticFiles(directory="public"), name="static")
-
 # MongoDB 연결
 MONGODB_URL = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "mentalcare_app")
 
-client = AsyncIOMotorClient(MONGODB_URL)
+client = AsyncIOMotorClient(MONGODB_URL, serverSelectionTimeoutMS=5000)
 db = client[DATABASE_NAME]
+
+# MongoDB 연결 확인 함수
+async def check_mongodb_connection():
+    """서버 시작 시 MongoDB 연결 확인"""
+    try:
+        # 서버 정보 확인으로 연결 테스트
+        await client.server_info()
+        print(f"[SUCCESS] MongoDB 연결 성공: {MONGODB_URL}")
+        print(f"[SUCCESS] 데이터베이스: {DATABASE_NAME}")
+        return True
+    except Exception as e:
+        print(f"[ERROR] MongoDB 연결 실패!")
+        print(f"  URL: {MONGODB_URL}")
+        print(f"  오류: {str(e)}")
+        print(f"\n해결 방법:")
+        print(f"  1. MongoDB 서비스가 실행 중인지 확인:")
+        print(f"     net start MongoDB")
+        print(f"  2. 포트 27017이 사용 중인지 확인:")
+        print(f"     netstat -ano | findstr :27017")
+        return False
+
+# FastAPI startup 이벤트
+@app.on_event("startup")
+async def startup_event():
+    """애플리케이션 시작 시 실행"""
+    connected = await check_mongodb_connection()
+    if not connected:
+        print("\n[WARNING] MongoDB 연결 실패로 일부 기능이 작동하지 않을 수 있습니다.")
 
 # 비밀번호 해싱
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -126,10 +150,60 @@ class DepressionMonitoring(BaseModel):
 
 # 유틸리티 함수들
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    """
+    비밀번호 검증 함수
+    bcrypt는 72바이트를 초과하는 비밀번호를 처리할 수 없으므로 길이 제한
+    passlib의 호환성 문제를 피하기 위해 직접 bcrypt 사용
+    """
+    try:
+        import bcrypt
+        
+        # 비밀번호를 바이트로 변환하고 길이 제한
+        password_bytes = plain_password.encode('utf-8')
+        if len(password_bytes) > 72:
+            password_bytes = password_bytes[:72]
+        
+        # 해시가 문자열인 경우 바이트로 변환
+        if isinstance(hashed_password, str):
+            hashed_password_bytes = hashed_password.encode('utf-8')
+        else:
+            hashed_password_bytes = hashed_password
+        
+        # bcrypt로 직접 검증
+        return bcrypt.checkpw(password_bytes, hashed_password_bytes)
+    except Exception as e:
+        # bcrypt 직접 검증 실패 시 passlib으로 폴백
+        try:
+            if len(plain_password.encode('utf-8')) > 72:
+                plain_password = plain_password[:72]
+            return pwd_context.verify(plain_password, hashed_password)
+        except Exception as e2:
+            print(f"비밀번호 검증 실패: {e2}")
+            return False
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    """
+    비밀번호 해싱 함수
+    bcrypt는 72바이트를 초과하는 비밀번호를 처리할 수 없으므로 길이 제한
+    passlib의 호환성 문제를 피하기 위해 직접 bcrypt 사용
+    """
+    try:
+        import bcrypt
+        
+        # 비밀번호를 바이트로 변환하고 길이 제한
+        password_bytes = password.encode('utf-8')
+        if len(password_bytes) > 72:
+            password_bytes = password_bytes[:72]
+        
+        # bcrypt로 직접 해싱
+        salt = bcrypt.gensalt()
+        hashed = bcrypt.hashpw(password_bytes, salt)
+        return hashed.decode('utf-8')
+    except Exception as e:
+        # bcrypt 직접 해싱 실패 시 passlib으로 폴백
+        if len(password.encode('utf-8')) > 72:
+            password = password[:72]
+        return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -176,6 +250,17 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # AI 관련 함수들
 # OpenAI 클라이언트 전역 초기화 (기존 프로젝트 방식)
+def get_openai_client():
+    """OpenAI 클라이언트 생성"""
+    try:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key or api_key == "your-openai-api-key-here":
+            return None
+        return openai.OpenAI(api_key=api_key)
+    except Exception as e:
+        print(f"OpenAI 클라이언트 생성 오류: {e}")
+        return None
+
 def call_openai_api(messages, model="gpt-3.5-turbo", max_tokens=150, temperature=0.7):
     """requests를 사용해서 OpenAI API 직접 호출"""
     try:
@@ -214,7 +299,7 @@ async def analyze_depression_score(message: str) -> float:
     try:
         prompt = f"""
         다음 사용자의 메시지를 분석하여 우울 수치를 0-10 사이의 숫자로 평가해주세요.
-        0은 일반적인 상태, 10은 매우 우울하고 절망적인 상태를 의미합니다.
+        1은 매우 긍정적인 상태, 5는 일반적인 상태, 10은 매우 우울하고 절망적인 상태를 의미합니다.
         
         사용자 메시지: "{message}"
         
@@ -444,25 +529,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 # 라우트들
-@app.get("/", response_class=HTMLResponse)
-async def read_root():
-    with open("public/index.html", "r", encoding="utf-8") as f:
-        return HTMLResponse(content=f.read())
-
-@app.get("/login", response_class=HTMLResponse)
-async def login_page():
-    with open("public/login.html", "r", encoding="utf-8") as f:
-        return HTMLResponse(content=f.read())
-
-@app.get("/signup", response_class=HTMLResponse)
-async def signup_page():
-    with open("public/signup.html", "r", encoding="utf-8") as f:
-        return HTMLResponse(content=f.read())
-
-@app.get("/dashboard", response_class=HTMLResponse)
-async def dashboard_page():
-    with open("public/dashboard.html", "r", encoding="utf-8") as f:
-        return HTMLResponse(content=f.read())
 
 # API 엔드포인트들
 @app.post("/api/signup", response_model=UserResponse)
@@ -526,10 +592,31 @@ async def chat_with_bot(
     try:
         user_id = str(current_user["_id"])
         
-        # 우울 수치 분석
-        depression_score = await analyze_depression_score(message.message)
+        # 이전 대화 기록 가져오기
+        existing_history = await db.chat_histories.find_one({"user_id": user_id})
+        previous_scores = existing_history.get("depression_scores", []) if existing_history else []
+        previous_average = sum(previous_scores) / len(previous_scores) if previous_scores else 5.0
         
-        # 챗봇 응답 생성
+        # 현재 메시지의 우울 수치 분석
+        raw_depression_score = await analyze_depression_score(message.message)
+        
+        # 이전 평균과 가중 평균을 사용하여 부드러운 변화 적용
+        # 최근 수치에 30% 가중치, 이전 평균에 70% 가중치 (더 부드러운 변화)
+        if previous_scores:
+            # 최근 3개 대화의 평균을 사용하여 더 안정적인 변화
+            recent_scores = previous_scores[-3:] if len(previous_scores) >= 3 else previous_scores
+            recent_average = sum(recent_scores) / len(recent_scores)
+            # 새로운 수치 40%, 최근 평균 30%, 전체 평균 30%
+            depression_score = (
+                raw_depression_score * 0.4 + 
+                recent_average * 0.3 + 
+                previous_average * 0.3
+            )
+        else:
+            # 첫 대화인 경우 원본 수치 사용
+            depression_score = raw_depression_score
+        
+        # 챗봇 응답 생성 (부드러운 수치 사용)
         bot_response = await generate_chatbot_response(message.message, depression_score)
         
         # 개입이 필요한지 확인
@@ -552,7 +639,7 @@ async def chat_with_bot(
             "user_message": message.message,
             "bot_response": bot_response,
             "depression_score": depression_score,
-            "timestamp": datetime.utcnow()
+            "timestamp": datetime.now(timezone(timedelta(hours=9)))  # KST (한국 시간)
         }
         
         # 기존 채팅 히스토리 업데이트 또는 새로 생성
@@ -581,7 +668,7 @@ async def chat_with_bot(
         return ChatResponse(
             response=bot_response,
             depression_score=depression_score,
-            timestamp=datetime.utcnow()
+            timestamp=datetime.now(timezone(timedelta(hours=9)))  # KST (한국 시간)
         )
         
     except Exception as e:
@@ -781,7 +868,7 @@ async def synthesize_speech(
     try:
         # 기존 프로젝트 방식으로 Supertone API 호출
         api_key = os.getenv("SUPERTONE_API_KEY")
-        voice_id = os.getenv("SUPERTONE_VOICE_ID", "2c5f135cb33f49a2c8882d")  # 기본값
+        voice_id = os.getenv("SUPERTONE_VOICE_ID", "195e1922033a6168f0c90f")  # 기본값
         
         if not api_key or api_key == "your_supertone_api_key_here":
             return {"error": "Supertone API 키가 설정되지 않았습니다."}
@@ -821,6 +908,13 @@ async def synthesize_speech(
             status_code=500,
             detail=f"음성 합성 중 오류가 발생했습니다: {str(e)}"
         )
+
+# 서버 종료 시 MongoDB 연결 종료
+@app.on_event("shutdown")
+async def shutdown_event():
+    """애플리케이션 종료 시 실행"""
+    client.close()
+    print("MongoDB 연결이 종료되었습니다.")
 
 # 서버 시작
 if __name__ == "__main__":
