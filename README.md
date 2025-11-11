@@ -4,11 +4,26 @@
 
 > **현재 상태**: 
 - ✅ 로그인 구현 완료 (bcrypt 호환성 문제 해결)
+- 랜딩페이지
+- <img width="400" alt="랜딩페이지" src="https://github.com/user-attachments/assets/09c87858-ded5-4fca-8936-8730642bf50e" />
+- 회원가입
+- <img width="400" alt="회원가입" src="https://github.com/user-attachments/assets/e779690a-8db3-406e-8668-fa2a6f7702ae" />
+- 로그인
+- <img width="400" alt="로그인" src="https://github.com/user-attachments/assets/a44ccf82-267c-4f95-98ca-9a29ac3ebb65" />
+
 - ✅ 챗봇 기능 구현 완료 (우울 수치 가중 평균 로직 적용)
 - ✅ 음성 대화 기능 완료 (Web Speech API STT, Supertone API TTS)
+- 챗봇
+- <img width="400" alt="챗봇" src="https://github.com/user-attachments/assets/97bc9ef2-c9fc-4748-a4fb-e6eeef1f345a" />
 - ✅ AI 컨설팅 구현 완료
-- ✅ 프론트엔드 Next.js 전환 완료 (반응형 UI, 노인 친화적 디자인)
+- 커리어 컨설팅
+- <img width="400" alt="커리어 컨설팅" src="https://github.com/user-attachments/assets/9a29e942-03e7-458a-b9bd-a6708aaf8230" />
 - ✅ 우울 수치 그래프 시각화 완료 (recharts)
+- 대화기록
+- <img width="400" alt="대화기록" src="https://github.com/user-attachments/assets/a7f65836-fac4-45e6-9f5e-3ee1c93891fb" />
+
+- ✅ 프론트엔드 Next.js 전환 완료 (반응형 UI, 노인 친화적 디자인)
+
 
 ## 📋 최근 업데이트
 
