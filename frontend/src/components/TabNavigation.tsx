@@ -1,34 +1,37 @@
 'use client';
 
+import { MessageCircle, Briefcase, BookOpen, ClipboardList } from 'lucide-react';
+
+type TabId = 'chat' | 'career' | 'history' | 'phq';
+
 interface TabNavigationProps {
-  activeTab: 'chat' | 'career' | 'history';
-  onTabChange: (tab: 'chat' | 'career' | 'history') => void;
+  activeTab: TabId;
+  onTabChange: (tab: TabId) => void;
 }
 
 export default function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
-  const tabs = [
-    { id: 'chat' as const, label: 'AI 챗봇', icon: '💬' },
-    { id: 'career' as const, label: '커리어 컨설팅', icon: '💼' },
-    { id: 'history' as const, label: '대화 기록', icon: '📚' },
+  const tabs: { id: TabId; label: string; icon: React.ReactNode }[] = [
+    { id: 'chat', label: 'AI 챗봇', icon: <MessageCircle size={24} /> },
+    { id: 'career', label: '커리어 컨설팅', icon: <Briefcase size={24} /> },
+    { id: 'history', label: '대화 기록', icon: <BookOpen size={24} /> },
+    { id: 'phq', label: 'PHQ-9 설문', icon: <ClipboardList size={24} /> },
   ];
 
   return (
-    <div className="flex gap-1 sm:gap-2 lg:gap-3 border-b-2 border-gray-300 overflow-x-auto">
+    <div className="flex gap-2 border-b border-slate-200 overflow-x-auto bg-white/80 backdrop-blur-md rounded-t-2xl p-2 shadow-sm">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
-          className={`px-1.5 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4 rounded-t-lg sm:rounded-t-xl font-bold transition-colors min-h-[44px] sm:min-h-[52px] lg:min-h-[64px] flex items-center justify-center flex-1 sm:flex-none min-w-0 ${
-            activeTab === tab.id
-              ? 'bg-teal-600 text-white shadow-lg'
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-          }`}
+          className={`px-4 py-3 rounded-xl font-bold transition-all duration-300 flex items-center justify-center flex-1 min-w-[100px] ${activeTab === tab.id
+              ? 'bg-gradient-to-r from-warm-teal-500 to-warm-teal-600 text-white shadow-lg scale-105'
+              : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-warm-teal-600'
+            }`}
         >
-          <span className="mr-0.5 sm:mr-2 text-sm sm:text-xl lg:text-2xl shrink-0">{tab.icon}</span>
-          <span className="text-xs sm:text-base lg:text-lg truncate">{tab.label}</span>
+          <span className="shrink-0">{tab.icon}</span>
+          <span className="ml-2 text-base truncate hidden sm:inline">{tab.label}</span>
         </button>
       ))}
     </div>
   );
 }
-

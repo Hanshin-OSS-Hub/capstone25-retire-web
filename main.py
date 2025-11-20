@@ -22,10 +22,30 @@ load_dotenv()
 app = FastAPI(title="멘탈케어 웹 애플리케이션", description="AI 챗봇과 커리어 컨설팅을 통한 멘탈케어 서비스")
 
 # CORS 설정
+# 환경 변수에서 허용할 오리진 가져오기 (ngrok 및 모바일 접속 지원)
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*")
+
+# allow_credentials 설정 (모든 오리진 허용 시 자동으로 False)
+allow_credentials = True
+
+if allowed_origins == "*":
+    # 완전 개방 모드: 모든 오리진 허용
+    # allow_credentials=False로 설정해야 와일드카드를 사용할 수 있음
+    origins = ["*"]
+    allow_origin_regex = None
+    allow_credentials = False
+else:
+    # 프로덕션 환경: 명시된 오리진만 허용
+    origins = [origin.strip() for origin in allowed_origins.split(",")]
+    allow_origin_regex = None
+    # 명시된 오리진만 허용하는 경우에만 자격 증명 허용
+    allow_credentials = True
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=origins,
+    allow_origin_regex=allow_origin_regex,
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -148,6 +168,15 @@ class DepressionMonitoring(BaseModel):
     last_updated: datetime
     needs_intervention: bool
 
+class PHQ9Submission(BaseModel):
+    scores: List[int]
+
+class PHQ9ResultResponse(BaseModel):
+    scores: List[int]
+    total_score: int
+    severity: str
+    created_at: datetime
+
 # 유틸리티 함수들
 def verify_password(plain_password, hashed_password):
     """
@@ -214,6 +243,28 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def calculate_phq9_severity(total_score: int) -> dict:
+    """PHQ-9 총점에 따른 심각도와 상세 설명 반환"""
+    if total_score >= 20:
+        return {
+            "label": "심한 우울",
+            "description": "심한 수준의 우울감이 시사됩니다.\n\n전문기관의 치료적 개입과 평가가 요구됩니다."
+        }
+    if total_score >= 10:
+        return {
+            "label": "중간정도의 우울",
+            "description": "중간정도 수준의 우울감이 시사됩니다.\n\n이러한 수준의 우울감은 흔히 신체적, 심리적 대처자원을 저하시키며 개인의 일상생활을 어렵게 만들기도 합니다.\n\n가까운 지역센터나 전문기관을 방문하여 보다 상세한 평가와 도움을 받아보시기 바랍니다."
+        }
+    if total_score >= 5:
+        return {
+            "label": "가벼운 우울",
+            "description": "다소 경미한 수준의 우울감이 있으나 일상생활에 지장을 줄 정도는 아닙니다.\n\n다만, 이러한 기분 상태가 지속될 경우 개인의 신체적, 심리적 대처자원을 저하시킬 수 있습니다.\n\n그러한 경우, 가까운 지역센터나 전문기관을 방문하시기 바랍니다."
+        }
+    return {
+        "label": "우울 아님",
+        "description": "유의한 수준의 우울이 시사되진 않습니다."
+    }
 
 async def get_user_by_email(email: str):
     user = await db.users.find_one({"email": email})
@@ -304,10 +355,19 @@ async def analyze_depression_score(message: str) -> float:
         사용자 메시지: "{message}"
         
         다음 요소들을 고려해주세요:
-        - 감정적 표현의 강도
-        - 부정적 단어의 사용
-        - 절망감이나 무력감의 표현
-        - 자해나 극단적 생각의 암시
+
+        K-LIWC 규칙
+        - 1인칭 단수 대명사 증가(I, me, my → 나, 내, 나는)
+        - 부정 정서 단어 비율증가
+        - 정서 강도 높은 단어 증가
+        - 사회적 단어 감소
+        - 긍정 정서 단어 감소
+        - 인지 왜곡, 극단 표현 증가
+        - 인지 처리 단어 증가
+        - 부정적 자기 평가
+        - 피로, 수면, 무기력 표현 증가
+        - 미래 지향 단어 감소 혹은 현재/과거 부정적 회상 증가
+        - 행동 관련 단어 감소
         
         응답은 반드시 0부터 10까지의 정수 하나만 반환해주세요. 다른 텍스트는 포함하지 마세요.
         예시: 3
@@ -338,7 +398,7 @@ async def analyze_depression_score(message: str) -> float:
         print(f"우울 수치 분석 오류: {e}")
         return 5.0  # 기본값
 
-async def generate_chatbot_response(message: str, depression_score: float) -> str:
+async def generate_chatbot_response(message: str, depression_score: float, phq_result: Optional[dict] = None) -> str:
     """사용자 메시지와 우울 수치를 바탕으로 챗봇 응답 생성"""
     try:
         # 우울 수치에 따른 응답 톤 조정
@@ -349,6 +409,13 @@ async def generate_chatbot_response(message: str, depression_score: float) -> st
         else:
             tone = "밝고 긍정적인 톤"
         
+        phq_context = ""
+        if phq_result:
+            phq_context = f"""
+        사용자의 최근 PHQ-9 검사 총점은 {phq_result.get("total_score")}점이며 "{phq_result.get("severity")}" 수준입니다.
+        이 정보를 고려하여 응답에서 필요한 경우 검사 결과를 요약하고 추가적인 도움을 권하세요.
+        """
+
         prompt = f"""
         당신은 멘탈케어 전문 챗봇입니다. 사용자의 우울 수치는 {depression_score}/10입니다.
         
@@ -358,8 +425,9 @@ async def generate_chatbot_response(message: str, depression_score: float) -> st
         3. 실용적이고 구체적인 조언을 제공하세요
         4. 필요시 전문적인 도움을 권하세요
         5. 응답은 한국어로 해주세요
-        6. 응답 길이는 2-3문장으로 제한하세요
+        6. 응답은 충분히 상세하고 도움이 되도록 작성하되, 너무 길지 않게 적절한 길이로 작성해주세요
         
+        {phq_context}
         사용자 메시지: "{message}"
         
         {tone}으로 응답해주세요.
@@ -368,7 +436,7 @@ async def generate_chatbot_response(message: str, depression_score: float) -> st
         response = call_openai_api(
             messages=[{"role": "user", "content": prompt}],
             model="gpt-3.5-turbo",
-            max_tokens=150,
+            max_tokens=500,  # 더 긴 응답을 받을 수 있도록 증가
             temperature=0.7
         )
         
@@ -509,6 +577,17 @@ async def check_depression_intervention(user_id: str) -> bool:
         print(f"우울 수치 개입 확인 오류: {e}")
         return False
 
+async def get_latest_phq_result(user_id: str):
+    try:
+        result = await db.phq_results.find_one(
+            {"user_id": user_id},
+            sort=[("created_at", -1)]
+        )
+        return result
+    except Exception as e:
+        print(f"PHQ-9 결과 조회 오류: {e}")
+        return None
+
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -556,18 +635,27 @@ async def signup(user: UserCreate):
 
 @app.post("/api/login", response_model=Token)
 async def login(user_credentials: UserLogin):
-    user = await authenticate_user(user_credentials.email, user_credentials.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="이메일 또는 비밀번호가 올바르지 않습니다.",
-            headers={"WWW-Authenticate": "Bearer"},
+    try:
+        user = await authenticate_user(user_credentials.email, user_credentials.password)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="이메일 또는 비밀번호가 올바르지 않습니다.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": user["email"]}, expires_delta=access_token_expires
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user["email"]}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+        return {"access_token": access_token, "token_type": "bearer"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] 로그인 처리 중 오류 발생: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"로그인 처리 중 오류가 발생했습니다: {str(e)}",
+        )
 
 @app.get("/api/user", response_model=UserResponse)
 async def get_current_user_info(current_user: dict = Depends(get_current_user)):
@@ -616,8 +704,15 @@ async def chat_with_bot(
             # 첫 대화인 경우 원본 수치 사용
             depression_score = raw_depression_score
         
+        # 최근 PHQ-9 결과 가져오기
+        phq_latest = await get_latest_phq_result(user_id)
+
         # 챗봇 응답 생성 (부드러운 수치 사용)
-        bot_response = await generate_chatbot_response(message.message, depression_score)
+        bot_response = await generate_chatbot_response(
+            message.message,
+            depression_score,
+            phq_latest
+        )
         
         # 개입이 필요한지 확인
         needs_intervention = await check_depression_intervention(user_id)
@@ -628,7 +723,6 @@ async def chat_with_bot(
             
             💙 전문적인 도움이 필요해 보입니다. 다음 기관들을 연락해보세요:
             • 생명의전화: 1588-9191
-            • 청소년전화: 1388
             • 정신건강상담전화: 1577-0199
             """
             bot_response += intervention_info
@@ -705,6 +799,8 @@ async def get_depression_status(current_user: dict = Depends(get_current_user)):
     try:
         user_id = str(current_user["_id"])
         chat_history = await db.chat_histories.find_one({"user_id": user_id})
+        phq_latest_doc = await get_latest_phq_result(user_id)
+        phq_latest = format_phq_response(phq_latest_doc)
         
         if not chat_history or not chat_history.get("depression_scores"):
             return {
@@ -712,26 +808,93 @@ async def get_depression_status(current_user: dict = Depends(get_current_user)):
                 "average_score": 0,
                 "recent_scores": [],
                 "needs_intervention": False,
-                "last_updated": None
+                "last_updated": None,
+                "phq_latest": phq_latest
             }
         
         recent_scores = chat_history["depression_scores"]
         current_score = recent_scores[-1] if recent_scores else 0
         average_score = sum(recent_scores) / len(recent_scores) if recent_scores else 0
         needs_intervention = len(recent_scores) >= 20 and average_score >= 7.0
-        
         return {
             "current_score": current_score,
             "average_score": average_score,
             "recent_scores": recent_scores[-20:],  # 최근 20개만
             "needs_intervention": needs_intervention,
-            "last_updated": chat_history.get("last_updated")
+            "last_updated": chat_history.get("last_updated"),
+            "phq_latest": phq_latest
         }
         
     except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=f"우울 수치 상태 조회 중 오류가 발생했습니다: {str(e)}"
+        )
+
+def format_phq_response(result):
+    if not result:
+        return None
+    severity = result.get("severity", {})
+    if isinstance(severity, dict):
+        return {
+            "scores": result.get("scores", []),
+            "total_score": result.get("total_score"),
+            "severity": severity.get("label", ""),
+            "severity_description": severity.get("description", ""),
+            "created_at": result.get("created_at")
+        }
+    # 기존 데이터 호환성 (문자열인 경우)
+    return {
+        "scores": result.get("scores", []),
+        "total_score": result.get("total_score"),
+        "severity": severity if isinstance(severity, str) else "",
+        "severity_description": "",
+        "created_at": result.get("created_at")
+    }
+
+@app.post("/api/phq9")
+async def submit_phq9_result(
+    submission: PHQ9Submission,
+    current_user: dict = Depends(get_current_user)
+):
+    scores = submission.scores
+    if len(scores) != 9 or any(score not in (0, 1, 2, 3) for score in scores):
+        raise HTTPException(
+            status_code=400,
+            detail="PHQ-9 점수 배열이 올바르지 않습니다."
+        )
+
+    total_score = sum(scores)
+    severity = calculate_phq9_severity(total_score)
+    result_doc = {
+        "user_id": str(current_user["_id"]),
+        "scores": scores,
+        "total_score": total_score,
+        "severity": severity,
+        "created_at": datetime.now(timezone(timedelta(hours=9)))  # KST (한국 시간)
+    }
+
+    await db.phq_results.insert_one(result_doc)
+
+    return format_phq_response(result_doc)
+
+@app.get("/api/phq9/latest")
+async def get_latest_phq9_result(current_user: dict = Depends(get_current_user)):
+    result = await get_latest_phq_result(str(current_user["_id"]))
+    return {"result": format_phq_response(result)}
+
+@app.get("/api/phq9/history")
+async def get_phq9_history(current_user: dict = Depends(get_current_user), limit: int = 10):
+    try:
+        cursor = db.phq_results.find(
+            {"user_id": str(current_user["_id"])}
+        ).sort("created_at", -1).limit(limit)
+        results = [format_phq_response(doc) for doc in await cursor.to_list(length=limit)]
+        return {"results": results}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"PHQ-9 히스토리 조회 중 오류가 발생했습니다: {str(e)}"
         )
 
 # 커리어 컨설팅 API 엔드포인트들
@@ -807,9 +970,15 @@ async def get_career_history(current_user: dict = Depends(get_current_user)):
     """사용자의 커리어 컨설팅 히스토리 조회"""
     try:
         user_id = str(current_user["_id"])
-        consultations = await db.career_consultations.find(
+        consultations_cursor = db.career_consultations.find(
             {"user_id": user_id}
-        ).sort("created_at", -1).to_list(length=10)
+        ).sort("created_at", -1).limit(10)
+        
+        consultations = []
+        async for doc in consultations_cursor:
+            # ObjectId를 문자열로 변환
+            doc["_id"] = str(doc["_id"])
+            consultations.append(doc)
         
         return {"consultations": consultations}
         

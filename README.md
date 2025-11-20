@@ -4,81 +4,46 @@
 
 > **현재 상태**: 
 - ✅ 로그인 구현 완료 (bcrypt 호환성 문제 해결)
-- 랜딩페이지
-- <img width="400" alt="랜딩페이지" src="https://github.com/user-attachments/assets/09c87858-ded5-4fca-8936-8730642bf50e" />
-- 회원가입
-- <img width="400" alt="회원가입" src="https://github.com/user-attachments/assets/e779690a-8db3-406e-8668-fa2a6f7702ae" />
-- 로그인
-- <img width="400" alt="로그인" src="https://github.com/user-attachments/assets/a44ccf82-267c-4f95-98ca-9a29ac3ebb65" />
-
-- ✅ 챗봇 기능 구현 완료 (우울 수치 가중 평균 로직 적용)
+- ✅ 챗봇 기능 구현 완료 (K-LIWC 기반 우울 수치 분석, 가중 평균 로직 적용)
 - ✅ 음성 대화 기능 완료 (Web Speech API STT, Supertone API TTS)
-- 챗봇
-- <img width="400" alt="챗봇" src="https://github.com/user-attachments/assets/97bc9ef2-c9fc-4748-a4fb-e6eeef1f345a" />
 - ✅ AI 컨설팅 구현 완료
-- 커리어 컨설팅
-- <img width="400" alt="커리어 컨설팅" src="https://github.com/user-attachments/assets/9a29e942-03e7-458a-b9bd-a6708aaf8230" />
 - ✅ 우울 수치 그래프 시각화 완료 (recharts)
-- 대화기록
-- <img width="400" alt="대화기록" src="https://github.com/user-attachments/assets/a7f65836-fac4-45e6-9f5e-3ee1c93891fb" />
-
+- ✅ PHQ-9 우울 자가검사 설문조사 구현 완료
+- ✅ 커리어 컨설팅 히스토리 조회 기능 완료
+- ✅ 노인 친화적 디자인 리뉴얼 완료 (따뜻한 색상, 자연 배경, 글래스모피즘)
 - ✅ 프론트엔드 Next.js 전환 완료 (반응형 UI, 노인 친화적 디자인)
-
-
 ## 📋 최근 업데이트
 
-### 🔐 인증 및 보안 개선
-- **bcrypt 호환성 오류 해결**: `passlib`와 `bcrypt` 버전 호환성 문제 해결
-- 직접 `bcrypt` 사용으로 우선 처리, `passlib`는 fallback으로 사용
+### 🎨 노인 친화적 디자인 리뉴얼 (Senior-Friendly Design)
+- **따뜻한 색상 팔레트**: Warm Teal(#2dd4bf), Soft Orange(#fb923c), Creamy White(#fdfbf7) 적용
+- **가독성 강화**: 기본 폰트 크기 확대(20px), Noto Sans KR 폰트 적용
+- **직관적인 UI**: 글래스모피즘(Glassmorphism) 카드 디자인, 큰 아이콘 및 버튼
+- **자연 친화적 배경**: 눈이 편안한 자연(숲/나뭇잎) 배경 이미지 적용
+- **반응형 최적화**: 모바일/태블릿/데스크톱 완벽 대응
 
-### 🎨 프론트엔드 아키텍처 변경
-- **Node.js/Next.js 도입**: 기존 정적 HTML/JS → Next.js 16 + React 19 + TypeScript로 전환
-- App Router 구조 적용
-- 구버전 정적 파일 제거 및 코드 정리
+### 💬 챗봇 및 입력창 개선
+- **입력 편의성**: 'Enter' 키로 전송, 'Shift + Enter'로 줄바꿈 기능 추가
+- **모바일 최적화**: 모바일 환경에서 입력창 레이아웃 및 버튼 크기 최적화
+- **시야 확보**: 모바일에서 채팅 영역 높이 확장 (500px -> 650px)
+- **텍스트 오버플로우 수정**: 긴 메시지 자동 줄바꿈 처리
 
-### 📱 반응형 UI 및 모바일 호환성
-- **반응형 디자인 구현**: Tailwind CSS v3로 전환
-- 모바일/태블릿/데스크톱 완전 대응
-- 모바일 접속 시 API URL 자동 감지 및 설정
-- **노인 친화적 UI 개선**:
-  - 기본 폰트 크기 18px
-  - 버튼 최소 크기 56x56px 이상
-  - 색상 대비 강화, 간격 확대
-  - 터치 타겟 크기 확대
-
-### 🎤 음성 기능 개선
-- **STT (Speech-to-Text)**: Whisper API → Web Speech API로 전환
-  - 브라우저 네이티브 음성 인식 사용 (인식률 향상)
-  - 한국어(`ko-KR`) 지원
-- **TTS (Text-to-Speech)**: Web Speech API → Supertone API로 전환
-  - 수동 재생 버튼 추가 (자동 재생 비활성화)
-  - 재생 버튼 UI 개선
-
-### 📊 우울 수치 분석 개선
-- **로직 개선**: 가중 평균 적용으로 급격한 변동 완화
-  - 최근 3개 대화 평균 30%, 전체 평균 30%, 새 수치 40% 가중치
-- **표시 개선**:
-  - 평균 우울 수치 → 현재 우울 수치로 변경
-  - 수치에 따른 배경색 그라데이션 (0: 하늘색, 5: 초록색, 10: 붉은색)
-  - 상태 텍스트 기준 조정 (7 이상: 높음, 3-6: 보통, 3 미만: 양호)
-
-### 🎨 UI/UX 디자인 개선
-- **색상 테마 변경**: 보라색 → 청록색(teal) 계열로 변경
-- 배경 그라데이션: 부드러운 파스텔 톤
-- 컴포넌트 개선 (대시보드 헤더, 탭 네비게이션, 그래프 반응형)
-
-### 📝 대화 기록 기능 개선
-- **시간 표시**: 대화 시간 표시 추가 (상대 시간, 한국 시간 기준)
-- **정렬 및 표시**: 최근 대화를 위로 정렬, 사용자 닉네임 표시
-- 우울 수치 그래프 추가 (recharts 사용)
-- 평균선 표시 개선
+### 📊 우울 수치 분석 고도화
+- **K-LIWC 기반 분석**: 한국어 언어심리분석 사전(K-LIWC)을 활용한 정교한 우울 수치 측정
+- **색상 로직 개선**: 우울 점수에 따른 직관적인 색상 변화
+  - 0~3점: **파란색 (안정)**
+  - 4~7점: **연두색 (주의)**
+  - 8~10점: **빨간색 (위험)**
+- **가중 평균 계산**: 최근 3개 대화 30%, 전체 평균 30%, 새 수치 40% 가중치 적용
+- **대화 기록 개선**: 긴 텍스트 자동 줄바꿈 처리, UI 오버플로우 해결
+- **상태 박스 최적화**: '현재 마음 상태' 박스 높이 축소로 공간 효율성 증대
 
 ## ✨ 주요 기능
 
 ### 🤖 AI 챗봇
+- **K-LIWC 기반 우울 수치 분석**: 한국어 언어심리분석 사전을 활용한 과학적 감정 분석
 - 일상 대화를 통한 우울 수치 모니터링 (0-10점)
 - **Web Speech API** 기반 음성 인식 및 텍스트 변환 (STT)
-- **Supertone API** 기반 음성 합성 (TTS)
+- **Supertone API** 기반 자연스러운 음성 합성 (TTS)
 - 실시간 감정 분석 및 적절한 응답 제공
 - 가중 평균 기반 우울 수치 계산 (급격한 변동 완화)
 
@@ -87,15 +52,18 @@
 - 개인 맞춤형 커리어 조언 제공
 - **5단계 상세 분석**: 강점 분석, 개선 제안, 추천 직무, 경력 발전 방향, 액션 플랜
 - 실시간 AI 분석 및 즉시 결과 확인
+- **컨설팅 히스토리 조회**: 과거 컨설팅 결과를 다시 확인 가능
 
 ### 📊 우울 수치 모니터링
-- 실시간 우울 수치 측정 및 기록
+- **K-LIWC 기반** 실시간 우울 수치 측정 및 기록
 - **가중 평균 기반** 우울 수치 계산
-- 현재 우울 수치 표시 (배경색 그라데이션)
+- 현재 우울 수치 표시 (직관적인 색상 그라데이션)
 - **recharts**를 활용한 시각적 데이터 표현
 - 최근 대화 기록 및 우울 수치 추이 그래프
 - 평균 우울 수치 추이 표시
-- 7점 이상 시 관련 기관 안내
+- 8점 이상 시 관련 기관 안내
+- **PHQ-9 우울 자가검사**: 표준화된 우울 검사 도구로 정확한 평가
+- 최신 PHQ-9 결과를 대시보드에 표시
 
 ## 🛠 기술 스택
 
@@ -208,7 +176,44 @@ npm install
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
+# ngrok 사용 시 (매 세션마다 URL이 변경되면 업데이트 필요)
+NEXT_PUBLIC_NGROK_URL=https://your-ngrok-url.ngrok-free.app
 ```
+
+**ngrok 사용 시 (무료 플랜 - 한 세션만 사용 가능):**
+
+무료 ngrok은 한 번에 하나의 터널만 사용할 수 있으므로, **프론트엔드만 ngrok으로 노출**하고 백엔드는 로컬 IP로 접근해야 합니다.
+
+1. **PC의 로컬 IP 확인**:
+   ```bash
+   # Windows
+   ipconfig
+   # IPv4 주소 확인 (예: 192.168.0.100 또는 210.100.148.132)
+   ```
+
+2. **프론트엔드 ngrok 시작**:
+   ```bash
+   ngrok http 3000
+   ```
+
+3. **환경 변수 설정** (`frontend/.env.local`):
+   ```env
+   # 백엔드는 PC의 로컬 IP로 접근 (같은 네트워크에서만 가능)
+   NEXT_PUBLIC_API_URL=http://210.100.148.132:8000
+   # 프론트엔드 ngrok URL (매 세션마다 변경되면 업데이트)
+   NEXT_PUBLIC_NGROK_URL=https://your-frontend-ngrok-url.ngrok-free.app
+   ```
+
+4. **프론트엔드 서버 재시작**:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+**중요**: 
+- `NEXT_PUBLIC_API_URL`은 **반드시 PC의 로컬 IP**로 설정해야 합니다 (localhost 불가)
+
+- ngrok URL이 변경되면 `NEXT_PUBLIC_NGROK_URL`만 업데이트하면 됩니다
 
 #### 프론트엔드 개발 서버 실행
 ```bash
@@ -216,6 +221,32 @@ npm run dev
 ```
 
 프론트엔드는 [http://localhost:3000](http://localhost:3000)에서 실행됩니다.
+
+### 4. 다른 기기/네트워크에서 접속하기
+
+1. **환경 변수 설정**
+   - 백엔드 `.env` 파일에서 `ALLOWED_ORIGINS`를 실제 프론트엔드 주소로 설정합니다.
+     ```env
+     ALLOWED_ORIGINS=https://app.example.com,https://admin.example.com
+     ```
+   - 프론트엔드 `frontend/.env.local`에서 `NEXT_PUBLIC_API_URL`을 외부에서 접근 가능한 백엔드 URL로 설정합니다.
+     ```env
+     NEXT_PUBLIC_API_URL=https://api.example.com
+     ```
+
+2. **서버 바인딩**
+   - FastAPI는 `uvicorn.run(..., host="0.0.0.0")`로 실행되므로 외부 접속이 가능합니다.
+   - 방화벽/보안 그룹에서 8000(백엔드), 3000(프론트) 포트를 허용해야 합니다.
+
+3. **로컬 네트워크 접속**
+   - 모바일 등 같은 네트워크의 다른 기기에서 접속하려면 PC의 로컬 IP를 사용합니다.
+     - 백엔드: `http://<PC_IP>:8000`
+     - 프론트엔드: `http://<PC_IP>:3000`
+   - FastAPI CORS 설정은 192/10/172 대역 IP와 ngrok 도메인을 자동으로 허용합니다.
+
+4. **공인 도메인/HTTPS**
+   - 배포 환경에서는 프록시(예: Nginx)에서 SSL을 종료하고, 백엔드로 프록시합니다.
+   - 프론트엔드와 백엔드 모두 동일한 도메인(또는 `ALLOWED_ORIGINS`/`NEXT_PUBLIC_API_URL`로 명시된 도메인)을 사용해야 합니다.
 
 ## 📁 프로젝트 구조
 
@@ -239,7 +270,8 @@ retireweb/
     │   │   ├── TabNavigation.tsx
     │   │   ├── ChatTab.tsx
     │   │   ├── CareerTab.tsx
-    │   │   └── HistoryTab.tsx
+    │   │   ├── HistoryTab.tsx
+    │   │   └── PhqTab.tsx
     │   └── lib/            # 유틸리티 함수
     │       └── api.ts      # API 통신 함수
     ├── package.json
@@ -257,6 +289,10 @@ retireweb/
 - **노인 친화적 UI** - 큰 폰트, 넓은 버튼, 명확한 색상 대비
 - **음성 대화 지원** - Web Speech API 기반 STT, Supertone API 기반 TTS
 - **우울 수치 시각화** - recharts를 활용한 그래프 표시
+- **PHQ-9 우울 자가검사** - 표준화된 우울 검사 도구로 정확한 평가
+- **모던 UI/UX** - 글래스모피즘, 그라데이션, 부드러운 애니메이션
+- **최적화된 타이포그래피** - Noto Sans KR 폰트, 최적화된 줄 간격
+- **카카오톡 스타일 입력창** - 자동 높이 조절, 하단 고정 레이아웃
 
 ## 🔧 API 엔드포인트
 
@@ -269,6 +305,10 @@ retireweb/
 - `POST /api/chat` - 챗봇 대화
 - `GET /api/chat/history` - 대화 기록 조회
 - `GET /api/depression/status` - 우울 수치 상태 조회
+
+### PHQ-9 설문조사
+- `POST /api/phq9` - PHQ-9 설문 결과 제출
+- `GET /api/phq9/latest` - 최신 PHQ-9 결과 조회
 
 ### 커리어 컨설팅
 - `POST /api/career/consultation/natural` - 자연어 이력서 커리어 컨설팅
@@ -284,8 +324,12 @@ retireweb/
 2. **AI 챗봇**: 일상 대화를 나누며 우울 수치를 모니터링합니다.
    - 음성 입력 버튼을 눌러 음성으로 대화할 수 있습니다.
    - AI 응답의 🔊 버튼을 눌러 음성으로 들을 수 있습니다.
-3. **커리어 컨설팅**: 자연어로 이력서를 작성하고 AI 분석을 받습니다.
-4. **대화 기록**: 우울 수치 변화를 차트로 확인합니다.
+   - 카카오톡 스타일 입력창으로 긴 메시지도 편리하게 입력 가능합니다.
+3. **PHQ-9 우울 자가검사**: 표준화된 설문조사를 통해 우울 수준을 정확히 평가합니다.
+   - 설문 결과는 자동으로 저장되며 챗봇 응답에 반영됩니다.
+4. **커리어 컨설팅**: 자연어로 이력서를 작성하고 AI 분석을 받습니다.
+   - 과거 컨설팅 결과를 히스토리에서 다시 확인할 수 있습니다.
+5. **대화 기록**: 우울 수치 변화를 차트로 확인합니다.
 
 ## ⚠️ 주의사항
 
@@ -336,16 +380,3 @@ retireweb/
 - Chrome, Edge 등 최신 브라우저 사용
 - 마이크 권한 확인
 - HTTPS 또는 localhost에서만 작동
-
-## 📞 지원
-
-문제가 발생하거나 질문이 있으시면 이슈를 생성해주세요.
-
-## 🙏 감사의 말
-
-- OpenAI - AI 서비스 제공
-- FastAPI - 웹 프레임워크
-- MongoDB - 데이터베이스
-- Next.js - React 프레임워크
-- recharts - 데이터 시각화
-- Supertone - 음성 합성 API

@@ -1,5 +1,7 @@
 'use client';
 
+import { LogOut, User } from 'lucide-react';
+
 interface DashboardHeaderProps {
   username: string;
   onLogout: () => void;
@@ -7,23 +9,25 @@ interface DashboardHeaderProps {
 
 export default function DashboardHeader({ username, onLogout }: DashboardHeaderProps) {
   return (
-    <header className="bg-teal-600 text-white p-4 sm:p-6 lg:p-8 rounded-xl mb-4 sm:mb-6 lg:mb-8 shadow-lg">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 lg:gap-6">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center gap-2 sm:gap-3">
-          <span className="text-3xl sm:text-4xl lg:text-5xl"></span>
+    <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 p-6 mb-6 sticky top-0 z-50 transition-all duration-300">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 max-w-7xl mx-auto">
+        <h1 className="text-2xl sm:text-3xl font-bold flex items-center tracking-tight text-slate-800">
           <span>RetireWeb</span>
         </h1>
-        <div className="flex items-center gap-3 sm:gap-4 lg:gap-6 w-full sm:w-auto justify-between sm:justify-end">
-          <span className="text-base sm:text-xl lg:text-2xl font-semibold">{username}님</span>
+        <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+          <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-full border border-slate-200">
+            <User size={18} className="text-slate-500" />
+            <span className="text-base font-semibold text-slate-700">{username}님</span>
+          </div>
           <button
             onClick={onLogout}
-            className="px-4 py-2 sm:px-6 sm:py-4 bg-white/25 hover:bg-white/35 rounded-xl transition-colors text-base sm:text-lg lg:text-xl font-bold shadow-md min-h-[48px] sm:min-h-[56px]"
+            className="flex items-center gap-2 px-5 py-2 bg-slate-800 text-white hover:bg-slate-900 rounded-full transition-all duration-300 font-medium text-sm shadow-sm hover:shadow-md active:scale-95"
           >
-            로그아웃
+            <LogOut size={16} />
+            <span>로그아웃</span>
           </button>
         </div>
       </div>
     </header>
   );
 }
-

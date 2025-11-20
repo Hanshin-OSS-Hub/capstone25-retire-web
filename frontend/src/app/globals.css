@@ -1,102 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
+  --foreground-rgb: 30, 41, 59;
+  /* Slate 800 */
+  --background-start-rgb: 253, 251, 247;
+  /* Creamy White */
   --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-  font-size: 18px; /* 노인 친화적 기본 폰트 크기 */
-  line-height: 1.6; /* 읽기 쉬운 줄 간격 */
+  background: rgb(var(--background-start-rgb));
+  background-image: linear-gradient(rgba(253, 251, 247, 0.85), rgba(253, 251, 247, 0.95)), url('/images/background_nature.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-size: 20px;
+  /* 노인 친화적 기본 폰트 크기 (상향) */
+  line-height: 1.8;
+  /* 읽기 쉬운 줄 간격 */
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
 }
 
 /* 커스텀 스타일 */
-.gradient-bg {
-  background: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 50%, #dcfce7 100%);
+.container-responsive {
+  max-width: 80rem;
+  /* max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
-/* 반응형 유틸리티 */
-.container-responsive {
-  @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+@media (min-width: 640px) {
+  .container-responsive {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-responsive {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 .card-responsive {
-  @apply bg-white rounded-lg shadow-lg p-3 sm:p-6 lg:p-8;
+  width: 100%;
 }
 
-/* 노인 친화적 스타일 */
-.elderly-friendly {
-  font-size: 20px;
-  line-height: 1.8;
+/* Sophisticated Glassmorphism */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
-.elderly-friendly h1 {
-  font-size: 2.5rem;
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(45, 212, 191, 0.1);
+  border-color: rgba(45, 212, 191, 0.2);
+}
+
+/* Sophisticated Gradients */
+.gradient-text {
+  background: linear-gradient(135deg, #0f766e 0%, #2dd4bf 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg-sophisticated {
+  background: radial-gradient(circle at 0% 0%, #f0fdfa 0%, #fff 50%, #fff7ed 100%);
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+  background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
+  color: white;
   font-weight: 700;
-  line-height: 1.3;
+  padding: 1rem 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(13, 148, 136, 0.3);
+  transition: all 0.3s ease;
+  font-size: 1.25rem;
 }
 
-.elderly-friendly h2 {
-  font-size: 2rem;
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4);
+  filter: brightness(1.05);
+}
+
+.btn-secondary {
+  background: white;
+  color: #0f766e;
+  border: 2px solid #2dd4bf;
   font-weight: 700;
-  line-height: 1.4;
+  padding: 1rem 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  font-size: 1.25rem;
 }
 
-.elderly-friendly h3 {
-  font-size: 1.75rem;
+.btn-secondary:hover {
+  background: #f0fdfa;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* 노인 친화적 입력 폼 */
+.input-friendly {
+  font-size: 1.25rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  border: 2px solid #e2e8f0;
+  background-color: white;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.input-friendly:focus {
+  border-color: #2dd4bf;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.2);
+}
+
+.label-friendly {
+  font-size: 1.25rem;
   font-weight: 600;
-  line-height: 1.4;
-}
-
-.elderly-friendly button {
-  min-height: 56px; /* 최소 터치 타겟 크기 */
-  min-width: 56px;
-  font-size: 18px;
-  font-weight: 600;
-  padding: 14px 24px;
-}
-
-.elderly-friendly input,
-.elderly-friendly textarea {
-  font-size: 18px;
-  padding: 16px 20px;
-  min-height: 56px;
-  border-width: 2px;
-}
-
-.elderly-friendly label {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  color: #334155;
+  margin-bottom: 0.75rem;
   display: block;
 }
 
-.elderly-friendly .link {
-  font-size: 18px;
-  text-decoration: underline;
-  font-weight: 600;
+/* 스크롤바 커스텀 */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

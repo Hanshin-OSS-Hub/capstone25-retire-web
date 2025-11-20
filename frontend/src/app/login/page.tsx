@@ -32,13 +32,13 @@ export default function LoginPage() {
     <div className="min-h-screen gradient-bg flex items-center justify-center p-4">
       <div className="container-responsive">
         <div className="card-responsive max-w-2xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8 text-center tracking-tight">
             로그인
           </h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-lg font-bold text-gray-900 mb-3">
+              <label htmlFor="email" className="block text-lg font-semibold text-gray-900 mb-3 tracking-tight">
                 이메일
               </label>
               <input
@@ -53,7 +53,7 @@ export default function LoginPage() {
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-lg font-bold text-gray-900 mb-3">
+              <label htmlFor="password" className="block text-lg font-semibold text-gray-900 mb-3 tracking-tight">
                 비밀번호
               </label>
               <input
