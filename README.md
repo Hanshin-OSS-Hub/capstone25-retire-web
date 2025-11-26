@@ -1,6 +1,7 @@
-# 🌟 RetireWeb
+# 🌟 RetireWeb (리타이어웹)
 
-은퇴 후 AI 챗봇과 커리어 컨설팅을 통한 종합적인 멘탈케어 플랫폼입니다.
+은퇴 후 시니어를 위한 **AI 챗봇 및 커리어 컨설팅 종합 멘탈케어 플랫폼**입니다.
+최신 AI 기술과 노인 친화적인 UI/UX를 결합하여, 어르신들의 정서적 안정과 제2의 인생 설계를 지원합니다.
 
 > **현재 상태**: 
 - ✅ 로그인 구현 완료 (bcrypt 호환성 문제 해결)
@@ -12,6 +13,21 @@
 - ✅ 커리어 컨설팅 히스토리 조회 기능 완료
 - ✅ 노인 친화적 디자인 리뉴얼 완료 (따뜻한 색상, 자연 배경, 글래스모피즘)
 - ✅ 프론트엔드 Next.js 전환 완료 (반응형 UI, 노인 친화적 디자인)
+
+---
+
+## 📚 목차
+1. [최근 업데이트](#-최근-업데이트)
+2. [핵심 기능 상세](#-핵심-기능-상세)
+3. [시스템 아키텍처](#-시스템-아키텍처)
+4. [K-LIWC 우울 정서 분석 알고리즘](#-k-liwc-우울-정서-분석-알고리즘)
+5. [API 명세서](#-api-명세서)
+6. [기술 스택 및 구현 상세](#-기술-스택-및-구현-상세)
+7. [설치 및 실행](#-설치-및-실행)
+8. [문제 해결](#-문제-해결)
+
+---
+
 ## 📋 최근 업데이트
 
 ### 🎨 노인 친화적 디자인 리뉴얼 (Senior-Friendly Design)
@@ -37,57 +53,156 @@
 - **대화 기록 개선**: 긴 텍스트 자동 줄바꿈 처리, UI 오버플로우 해결
 - **상태 박스 최적화**: '현재 마음 상태' 박스 높이 축소로 공간 효율성 증대
 
-## ✨ 주요 기능
+---
 
-### 🤖 AI 챗봇
-- **K-LIWC 기반 우울 수치 분석**: 한국어 언어심리분석 사전을 활용한 과학적 감정 분석
-- 일상 대화를 통한 우울 수치 모니터링 (0-10점)
-- **Web Speech API** 기반 음성 인식 및 텍스트 변환 (STT)
-- **Supertone API** 기반 자연스러운 음성 합성 (TTS)
-- 실시간 감정 분석 및 적절한 응답 제공
-- 가중 평균 기반 우울 수치 계산 (급격한 변동 완화)
+## 🚀 핵심 기능 상세
 
-### 💼 AI 커리어 컨설팅
-- **자연어 이력서 작성** - 복잡한 JSON 형식 없이 자유롭게 작성
-- 개인 맞춤형 커리어 조언 제공
-- **5단계 상세 분석**: 강점 분석, 개선 제안, 추천 직무, 경력 발전 방향, 액션 플랜
-- 실시간 AI 분석 및 즉시 결과 확인
-- **컨설팅 히스토리 조회**: 과거 컨설팅 결과를 다시 확인 가능
+### 1. 🤖 AI 심리 상담 챗봇 (Deep Dive)
+단순한 응답 생성을 넘어, 사용자의 심리 상태에 맞춰 **동적으로 페르소나를 조정**합니다.
 
-### 📊 우울 수치 모니터링
-- **K-LIWC 기반** 실시간 우울 수치 측정 및 기록
-- **가중 평균 기반** 우울 수치 계산
-- 현재 우울 수치 표시 (직관적인 색상 그라데이션)
-- **recharts**를 활용한 시각적 데이터 표현
-- 최근 대화 기록 및 우울 수치 추이 그래프
-- 평균 우울 수치 추이 표시
-- 8점 이상 시 관련 기관 안내
-- **PHQ-9 우울 자가검사**: 표준화된 우울 검사 도구로 정확한 평가
-- 최신 PHQ-9 결과를 대시보드에 표시
+- **동적 페르소나 시스템 (Dynamic Persona System)**:
+    - **안정 상태 (0-3점)**: "밝고 긍정적인 친구" 톤으로 일상적인 대화를 주도하며 활력을 북돋아줍니다.
+    - **주의 상태 (4-7점)**: "공감하는 상담가" 톤으로 전환되어, 사용자의 감정을 읽어주고 위로하는 대화에 집중합니다.
+    - **위험 상태 (8-10점)**: "전문적인 케어기버" 톤으로, 섣불리 조언하기보다 경청하며 전문 기관의 도움을 부드럽게 권유합니다.
 
-## 🛠 기술 스택
+- **컨텍스트 인식 (Context Awareness)**:
+    - 대화 생성 시 `최근 대화 기록` + `PHQ-9 검사 결과` + `현재 우울 점수`를 프롬프트에 함께 주입합니다.
+    - 예: "지난번 검사에서 수면 장애가 있다고 하셨는데, 어젯밤은 잘 주무셨나요?"와 같은 개인화된 안부 묻기가 가능합니다.
 
-### 백엔드
-- **FastAPI** - 고성능 웹 프레임워크
-- **MongoDB** - NoSQL 데이터베이스
-- **Uvicorn** - ASGI 서버
-- **Pydantic** - 데이터 검증 및 설정 관리
-- **JWT** - 인증 토큰 관리
-- **bcrypt** - 비밀번호 해싱 (직접 사용)
+### 2. 💼 AI 커리어 컨설팅 (NLP Pipeline)
+복잡한 입력 폼 대신, 어르신들이 편하게 줄글로 쓴 자기소개를 구조화된 데이터로 변환합니다.
 
-### AI 서비스
-- **OpenAI API** - ChatGPT (챗봇, 커리어 컨설팅)
-- **Web Speech API** - 브라우저 네이티브 음성 인식 (STT)
-- **Supertone API** - 음성 합성 (TTS)
-- **직접 HTTP 요청** - OpenAI 라이브러리 대신 requests 사용으로 안정성 향상
+- **자연어 처리 파이프라인**:
+    1. **비정형 텍스트 입력**: "나는 30년간 초등학교 교사로 일했고, 아이들을 가르치는 게 좋았어. 컴퓨터는 잘 못해."
+    2. **구조화 (Structuring)**: LLM이 텍스트에서 `경력(30년 교사)`, `직무 선호(교육)`, `역량(티칭)`, `제약사항(컴퓨터 활용 능력 낮음)`을 추출.
+    3. **분석 및 매칭**: 추출된 데이터를 바탕으로 5단계 분석(강점/개선점/추천직무/방향성/액션플랜) 수행.
+    4. **리포트 생성**: 시니어가 이해하기 쉬운 용어로 순화된 최종 컨설팅 리포트 제공.
 
-### 프론트엔드
-- **Next.js 16** - React 프레임워크
-- **React 19** - UI 라이브러리
-- **TypeScript** - 타입 안정성
-- **Tailwind CSS v3** - 유틸리티 우선 CSS 프레임워크
-- **recharts** - 데이터 시각화 (그래프)
-- **Web Speech API** - 브라우저 네이티브 음성 인식
+### 3. 🗣️ 하이브리드 음성 인터페이스
+지연 시간(Latency)과 품질(Quality)의 균형을 맞춘 하이브리드 방식을 채택했습니다.
+
+- **입력 (STT)**: **Web Speech API** (브라우저 내장)
+    - **이유**: 서버를 거치지 않고 즉각적인 텍스트 변환이 가능하여, 말하는 도중 끊김 없는 경험 제공. 별도 비용 발생 없음.
+- **출력 (TTS)**: **Supertone API**
+    - **이유**: 기계적인 음성이 아닌, 감정이 실린 고품질의 한국어 음성을 생성하여 정서적 유대감 형성.
+
+---
+
+## 🏗 시스템 아키텍처
+
+본 프로젝트는 **MSA(Microservices Architecture)** 지향의 모던 웹 아키텍처를 따릅니다.
+
+```mermaid
+graph TD
+    User[사용자 (Web/Mobile)] -->|HTTPS| Frontend[Frontend (Next.js 16)]
+    
+    subgraph "Frontend Layer"
+        Frontend -->|State Mgmt| React[React 19]
+        Frontend -->|Styling| Tailwind[Tailwind CSS]
+        Frontend -->|Visualization| Recharts[Recharts]
+        Frontend -->|Voice Input| WebSpeech[Web Speech API (STT)]
+    end
+    
+    Frontend -->|REST API| Backend[Backend (FastAPI)]
+    
+    subgraph "Backend Layer"
+        Backend -->|Auth| JWT[JWT & bcrypt]
+        Backend -->|DB Driver| Motor[Motor (Async)]
+        Backend -->|Data Validation| Pydantic[Pydantic]
+    end
+    
+    Backend -->|NoSQL| DB[(MongoDB)]
+    
+    subgraph "AI Services Layer"
+        Backend -->|Text Analysis| OpenAI[OpenAI GPT-3.5 (Analysis/Chat)]
+        Backend -->|Voice Output| Supertone[Supertone API (TTS)]
+    end
+```
+
+---
+
+## 🧠 K-LIWC 우울 정서 분석 알고리즘
+
+RetireWeb의 핵심 경쟁력은 **K-LIWC (Korean Linguistic Inquiry and Word Count)** 방법론을 적용한 독자적인 우울 수치 분석 알고리즘입니다.
+
+### 1. 분석 지표 (11 Markers)
+사용자의 대화 텍스트에서 다음 요소들의 빈도와 강도를 분석하여 0~10점 척도로 변환합니다:
+
+1.  **1인칭 단수 대명사 증가**: `나`, `내`, `내가` 등의 과도한 자기 몰입 표현 (Self-focus)
+2.  **부정 정서 단어 증가**: 슬픔, 불안, 분노 관련 어휘의 빈도
+3.  **정서 강도**: 감정 표현의 격렬함 정도 (예: "조금 슬퍼" vs "죽고 싶을 만큼 비참해")
+4.  **사회적 단어 감소**: 가족, 친구, 동료 등 타인 지칭 단어의 부재 (사회적 고립 시사)
+5.  **긍정 정서 단어 감소**: 기쁨, 감사, 희망 관련 어휘의 현저한 저하
+6.  **인지 왜곡 및 극단적 표현**: `항상`, `전혀`, `모두`, `절대` 등 흑백 논리적 어휘
+7.  **인지 처리 단어 증가**: `아마`, `~인 것 같다` 등 불확실성과 반추(곱씹음)를 나타내는 표현
+8.  **부정적 자기 평가**: 자책, 비하, 무가치감 표현
+9.  **신체적 증상 호소**: 피로, 수면 장애, 무기력, 식욕 부진 언급
+10. **미래 지향 단어 감소**: 계획, 기대, 내일 등 미래 관련 어휘 부재 (절망감)
+11. **행동 관련 단어 감소**: 구체적인 활동이나 움직임을 나타내는 동사 감소
+
+### 2. 점수 산출 및 보정 (Scoring & Smoothing)
+분석된 결과는 0~10점 척도로 변환되며, 일시적인 감정 기복으로 인한 오탐지를 방지하기 위해 **가중 이동 평균(Weighted Moving Average)** 방식을 사용합니다.
+
+$$ Score_{final} = (S_{current} \times 0.4) + (S_{recent\_avg} \times 0.3) + (S_{total\_avg} \times 0.3) $$
+
+- **현재 대화 (40%)**: 지금 나누고 있는 대화의 감정 상태를 가장 중요하게 반영
+- **최근 3회 평균 (30%)**: 단기적인 감정 추세 반영 (급격한 변화 완화)
+- **전체 누적 평균 (30%)**: 장기적인 기분 상태 (기저선) 반영
+
+---
+
+## 🔌 API 명세서
+
+### 인증 (Authentication)
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| `POST` | `/api/signup` | 신규 회원가입 |
+| `POST` | `/api/login` | 로그인 및 JWT 토큰 발급 |
+| `GET` | `/api/user` | 현재 로그인한 사용자 정보 조회 |
+
+### 챗봇 (Chatbot)
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| `POST` | `/api/chat` | 챗봇과 대화 (우울 수치 분석 포함) |
+| `GET` | `/api/chat/history` | 사용자의 전체 대화 기록 및 우울 수치 조회 |
+| `GET` | `/api/depression/status` | 현재 우울 상태 및 통계 조회 |
+
+### 커리어 컨설팅 (Career)
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| `POST` | `/api/career/consultation/natural` | 자연어 이력서 기반 커리어 컨설팅 생성 |
+| `GET` | `/api/career/history` | 과거 컨설팅 기록 조회 |
+
+### 기타 (Others)
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| `POST` | `/api/phq9` | PHQ-9 설문 결과 제출 |
+| `POST` | `/api/audio/synthesize` | 텍스트를 음성으로 변환 (Supertone API) |
+
+---
+
+## 🛠 기술 스택 및 구현 상세
+
+### Frontend
+- **Next.js 16.0.1 (App Router)**:
+    - 최신 React 기능을 활용하기 위해 채택.
+    - SEO 최적화와 초기 로딩 속도 개선을 위해 서버 사이드 렌더링(SSR) 적극 활용.
+- **Tailwind CSS v3 (Custom Design System)**:
+    - **Color Palette**: 시각적 편안함을 위해 `warm-teal`(#2dd4bf), `soft-orange`(#fb923c) 등 커스텀 컬러 정의.
+    - **Animations**: `blob` (배경 유동 효과), `fade-in-up` (부드러운 등장) 등 마이크로 인터랙션 구현.
+- **Accessibility (접근성)**:
+    - `Noto Sans KR` 폰트 적용 및 기본 폰트 사이즈 상향(20px)으로 노안이 있는 사용자 배려.
+
+### Backend
+- **FastAPI (Python)**:
+    - **Async/Await**: AI 모델 호출, DB 쿼리 등 I/O 바운드 작업이 많은 서비스 특성상, 비동기 처리를 통해 동시 접속자 처리 성능 극대화.
+- **Motor (Async MongoDB Driver)**:
+    - `pymongo` 대신 `motor`를 사용하여 FastAPI의 비동기 성능을 저해하지 않고 DB 작업 수행.
+- **Security**:
+    - `bcrypt`를 직접 사용하여 비밀번호 해싱 (라이브러리 호환성 이슈 해결).
+    - JWT 기반의 Stateless 인증으로 확장성 확보.
+
+---
 
 ## 🚀 설치 및 실행
 
@@ -188,7 +303,7 @@ NEXT_PUBLIC_NGROK_URL=https://your-ngrok-url.ngrok-free.app
    ```bash
    # Windows
    ipconfig
-   # IPv4 주소 확인 (예: 192.168.0.100 또는 210.100.148.132)
+   # IPv4 주소 확인
    ```
 
 2. **프론트엔드 ngrok 시작**:
@@ -199,7 +314,7 @@ NEXT_PUBLIC_NGROK_URL=https://your-ngrok-url.ngrok-free.app
 3. **환경 변수 설정** (`frontend/.env.local`):
    ```env
    # 백엔드는 PC의 로컬 IP로 접근 (같은 네트워크에서만 가능)
-   NEXT_PUBLIC_API_URL=http://210.100.148.132:8000
+   NEXT_PUBLIC_API_URL=http://<your-local-ip>:8000
    # 프론트엔드 ngrok URL (매 세션마다 변경되면 업데이트)
    NEXT_PUBLIC_NGROK_URL=https://your-frontend-ngrok-url.ngrok-free.app
    ```
@@ -247,97 +362,6 @@ npm run dev
 4. **공인 도메인/HTTPS**
    - 배포 환경에서는 프록시(예: Nginx)에서 SSL을 종료하고, 백엔드로 프록시합니다.
    - 프론트엔드와 백엔드 모두 동일한 도메인(또는 `ALLOWED_ORIGINS`/`NEXT_PUBLIC_API_URL`로 명시된 도메인)을 사용해야 합니다.
-
-## 📁 프로젝트 구조
-
-```
-retireweb/
-├── main.py                 # FastAPI 애플리케이션 메인 파일
-├── requirements.txt         # Python 의존성
-├── .env                    # 환경 변수 (생성 필요)
-├── .gitignore              # Git 무시 파일
-├── README.md               # 프로젝트 문서
-└── frontend/               # Next.js 프론트엔드
-    ├── src/
-    │   ├── app/            # Next.js App Router
-    │   │   ├── page.tsx    # 메인 페이지
-    │   │   ├── login/      # 로그인 페이지
-    │   │   ├── signup/     # 회원가입 페이지
-    │   │   └── dashboard/ # 대시보드 페이지
-    │   ├── components/     # React 컴포넌트
-    │   │   ├── DashboardHeader.tsx
-    │   │   ├── DepressionStatus.tsx
-    │   │   ├── TabNavigation.tsx
-    │   │   ├── ChatTab.tsx
-    │   │   ├── CareerTab.tsx
-    │   │   ├── HistoryTab.tsx
-    │   │   └── PhqTab.tsx
-    │   └── lib/            # 유틸리티 함수
-    │       └── api.ts      # API 통신 함수
-    ├── package.json
-    ├── tailwind.config.js
-    └── .env.local          # 프론트엔드 환경 변수
-```
-
-## 🎯 핵심 특징
-
-- **완전 작동하는 프로덕션 버전** - 모든 기능이 테스트되고 검증됨
-- **자연어 이력서** - 사용자 친화적인 인터페이스
-- **실시간 AI 분석** - 즉시 결과 확인 가능
-- **안정적인 API 통신** - 직접 HTTP 요청으로 안정성 확보
-- **반응형 디자인** - 모든 디바이스에서 최적화된 경험
-- **노인 친화적 UI** - 큰 폰트, 넓은 버튼, 명확한 색상 대비
-- **음성 대화 지원** - Web Speech API 기반 STT, Supertone API 기반 TTS
-- **우울 수치 시각화** - recharts를 활용한 그래프 표시
-- **PHQ-9 우울 자가검사** - 표준화된 우울 검사 도구로 정확한 평가
-- **모던 UI/UX** - 글래스모피즘, 그라데이션, 부드러운 애니메이션
-- **최적화된 타이포그래피** - Noto Sans KR 폰트, 최적화된 줄 간격
-- **카카오톡 스타일 입력창** - 자동 높이 조절, 하단 고정 레이아웃
-
-## 🔧 API 엔드포인트
-
-### 인증
-- `POST /api/signup` - 회원가입
-- `POST /api/login` - 로그인
-- `GET /api/user` - 사용자 정보 조회
-
-### 챗봇
-- `POST /api/chat` - 챗봇 대화
-- `GET /api/chat/history` - 대화 기록 조회
-- `GET /api/depression/status` - 우울 수치 상태 조회
-
-### PHQ-9 설문조사
-- `POST /api/phq9` - PHQ-9 설문 결과 제출
-- `GET /api/phq9/latest` - 최신 PHQ-9 결과 조회
-
-### 커리어 컨설팅
-- `POST /api/career/consultation/natural` - 자연어 이력서 커리어 컨설팅
-- `GET /api/career/history` - 커리어 컨설팅 기록 조회
-
-### 음성 처리
-- `POST /api/audio/transcribe` - 음성 인식 (현재 미사용, Web Speech API 사용)
-- `POST /api/audio/synthesize` - 음성 합성 (Supertone API)
-
-## 🎯 사용 방법
-
-1. **회원가입/로그인**: 계정을 생성하고 로그인합니다.
-2. **AI 챗봇**: 일상 대화를 나누며 우울 수치를 모니터링합니다.
-   - 음성 입력 버튼을 눌러 음성으로 대화할 수 있습니다.
-   - AI 응답의 🔊 버튼을 눌러 음성으로 들을 수 있습니다.
-   - 카카오톡 스타일 입력창으로 긴 메시지도 편리하게 입력 가능합니다.
-3. **PHQ-9 우울 자가검사**: 표준화된 설문조사를 통해 우울 수준을 정확히 평가합니다.
-   - 설문 결과는 자동으로 저장되며 챗봇 응답에 반영됩니다.
-4. **커리어 컨설팅**: 자연어로 이력서를 작성하고 AI 분석을 받습니다.
-   - 과거 컨설팅 결과를 히스토리에서 다시 확인할 수 있습니다.
-5. **대화 기록**: 우울 수치 변화를 차트로 확인합니다.
-
-## ⚠️ 주의사항
-
-- OpenAI API 키가 필요합니다.
-- MongoDB가 실행 중이어야 합니다.
-- 음성 기능을 사용하려면 Supertone API 키가 필요합니다.
-- Web Speech API는 Chrome, Edge 등 최신 브라우저에서만 지원됩니다.
-- 프로덕션 환경에서는 보안 설정을 강화하세요.
 
 ## 🔧 문제 해결
 
