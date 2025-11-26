@@ -94,29 +94,94 @@
 
 ```mermaid
 graph TD
-    User[사용자 (Web/Mobile)] -->|HTTPS| Frontend[Frontend (Next.js 16)]
-    
-    subgraph "Frontend Layer"
-        Frontend -->|State Mgmt| React[React 19]
-        Frontend -->|Styling| Tailwind[Tailwind CSS]
-        Frontend -->|Visualization| Recharts[Recharts]
-        Frontend -->|Voice Input| WebSpeech[Web Speech API (STT)]
+%% 스타일 정의
+classDef user fill:#f9f9f9,stroke:#333,stroke-width:2px,color:black;
+classDef frontend fill:#e0f2f1,stroke:#2dd4bf,stroke-width:2px,color:black;
+classDef backend fill:#fff3e0,stroke:#fb923c,stroke-width:2px,color:black;
+classDef database fill:#e1bee7,stroke:#8e24aa,stroke-width:2px,color:black;
+classDef ai fill:#e3f2fd,stroke:#1e88e5,stroke-width:2px,stroke-dasharray: 5 5,color:black;
+
+%% 1. 사용자 영역
+subgraph User_Zone ["User Environment"]
+    User(👴 Senior User)
+    Device[PC / Mobile / Tablet]
+end
+
+%% 2. 클라이언트 사이드 (프론트엔드)
+subgraph Client_Side ["Frontend Layer - Next.js 16"]
+    direction TB
+    Browser[Web Browser]
+
+    subgraph Browser_Modules ["In-Browser Modules"]
+        UI["React UI Components<br/>(Tailwind CSS)"]
+        STT["🎤 Web Speech API<br/>(STT Engine)"]
+        Chart["Recharts<br/>Visualization"]
     end
-    
-    Frontend -->|REST API| Backend[Backend (FastAPI)]
-    
-    subgraph "Backend Layer"
-        Backend -->|Auth| JWT[JWT & bcrypt]
-        Backend -->|DB Driver| Motor[Motor (Async)]
-        Backend -->|Data Validation| Pydantic[Pydantic]
+end
+
+%% 3. 서버 사이드 (백엔드)
+subgraph Server_Side ["Backend Infrastructure - FastAPI"]
+    direction TB
+    APIGateway[API Endpoint / Router]
+
+    subgraph Logic_Core ["Core Logic"]
+        Auth["🔐 JWT & Bcrypt<br/>Auth Manager"]
+        KLIWC["🧠 K-LIWC<br/>Depression Analyzer"]
+        PromptEng["Prompt Engineering<br/>Context Manager"]
     end
-    
-    Backend -->|NoSQL| DB[(MongoDB)]
-    
-    subgraph "AI Services Layer"
-        Backend -->|Text Analysis| OpenAI[OpenAI GPT-3.5 (Analysis/Chat)]
-        Backend -->|Voice Output| Supertone[Supertone API (TTS)]
-    end
+
+    Motor["⚙️ Motor<br/>Async Driver"]
+end
+
+%% 4. 데이터베이스
+subgraph Data_Layer ["Data Persistence"]
+    MongoDB[("🍃 MongoDB<br/>NoSQL Database")]
+end
+
+%% 5. 외부 AI 서비스
+subgraph External_AI ["External AI Cloud Services"]
+    OpenAI["☁️ OpenAI API<br/>(GPT-3.5/4)"]
+    Supertone["☁️ Supertone API<br/>(Expressive TTS)"]
+end
+
+%% 연결 관계 (Flow)
+User -->|Touch/Voice| Device
+Device -->|HTTPS| Browser
+
+%% 프론트엔드 내부 흐름
+Browser --> UI
+UI -- "Voice Input" --> STT
+STT -- "Text Data" --> UI
+
+%% 백엔드 통신
+UI -- "REST API (JSON)" --> APIGateway
+
+%% 백엔드 로직 흐름
+APIGateway --> Auth
+APIGateway --> PromptEng
+PromptEng --> KLIWC
+
+%% DB 연결
+Motor <--> MongoDB
+Auth -.-> Motor
+PromptEng -.-> Motor
+
+%% 외부 AI 통신
+PromptEng -- "Analysis Request" --> OpenAI
+OpenAI -- "Persona Response" --> PromptEng
+
+APIGateway -- "Text Response" --> Supertone
+Supertone -- "Audio Stream" --> APIGateway
+
+%% 최종 응답
+APIGateway -- "Response (Text + Audio + Score)" --> UI
+
+%% 클래스 적용
+class User,Device user;
+class Browser,UI,STT,Chart frontend;
+class APIGateway,Auth,KLIWC,PromptEng,Motor backend;
+class MongoDB database;
+class OpenAI,Supertone ai;
 ```
 
 ---
