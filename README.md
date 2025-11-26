@@ -64,6 +64,7 @@
 
 ### 1. 🤖 AI 심리 상담 챗봇 (Deep Dive)
 단순한 응답 생성을 넘어, 사용자의 심리 상태에 맞춰 **동적으로 페르소나를 조정**합니다.
+**OpenAI SDK**를 통해 **GPT-3.5 Turbo** 모델을 제어하며, 빠르고 자연스러운 한국어 대화를 생성합니다.
 
 - **동적 페르소나 시스템 (Dynamic Persona System)**:
     - **안정 상태 (0-3점)**: "밝고 긍정적인 친구" 톤으로 일상적인 대화를 주도하며 활력을 북돋아줍니다.
@@ -269,6 +270,11 @@ $$ Score_{final} = (S_{current} \times 0.4) + (S_{recent\_avg} \times 0.3) + (S_
     - **Async/Await**: AI 모델 호출, DB 쿼리 등 I/O 바운드 작업이 많은 서비스 특성상, 비동기 처리를 통해 동시 접속자 처리 성능 극대화.
 - **Motor (Async MongoDB Driver)**:
     - `pymongo` 대신 `motor`를 사용하여 FastAPI의 비동기 성능을 저해하지 않고 DB 작업 수행.
+- **AI & NLP Integration**:
+    - **OpenAI SDK**: 최신 Python SDK를 활용하여 안정적인 API 통신 구현.
+    - **Model (GPT-3.5 Turbo)**: 
+        - 높은 가성비와 빠른 응답 속도(Latency)를 보장하는 `gpt-3.5-turbo` 모델 채택.
+        - System Prompt를 통해 페르소나와 제약 조건을 강력하게 제어.
 - **Security**:
     - `bcrypt`를 직접 사용하여 비밀번호 해싱 (라이브러리 호환성 이슈 해결).
     - JWT 기반의 Stateless 인증으로 확장성 확보.
