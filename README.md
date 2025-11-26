@@ -475,3 +475,6 @@ npm run dev
 - Chrome, Edge 등 최신 브라우저 사용
 - 마이크 권한 확인
 - HTTPS 또는 localhost에서만 작동
+
+# License
+  본 프로젝트는 MIT 라이선스를 지향합니다.
