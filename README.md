@@ -494,88 +494,6 @@ npm run dev
 - 마이크 권한 확인
 - HTTPS 또는 localhost에서만 작동
 
-# License
-  본 프로젝트는 MIT 라이선스를 지향합니다.
-
-## 👥 팀원 및 역할 (Team Members)
-
-| 프로필 | 이름 / 역할 | 담당 업무 (R&R) |
-| :---: | :---: | :--- |
-| <img src="https://github.com/팀장아이디.png" width="90"> | **설범준**<br>Team Leader<br>(PM) | **[Project Management]**<br>• 프로젝트 일정 관리 및 기획 총괄<br>• 서비스 요구사항 정의 및 문서화<br>• 발표 자료 제작 |
-| <img src="https://github.com/Lim-Dong-Kyu.png" width="90"> | **임동규**<br> **개발 총괄**<br>(Tech Lead) | **[Full Stack Development]**<br>• **Frontend**: Next.js, Tailwind, 음성 인터페이스<br>• **Backend**: FastAPI, MongoDB, API 구축<br>• **AI**: K-LIWC 알고리즘, 프롬프트 엔지니어링 |
-| <img src="https://ui-avatars.com/api/?name=이름&background=random" width="90" style="border-radius:50%"> | **하채연프론트엔드는 [http://localhost:3000](http://localhost:3000)에서 실행됩니다.
-
-### 4. 다른 기기/네트워크에서 접속하기
-
-1. **환경 변수 설정**
-   - 백엔드 `.env` 파일에서 `ALLOWED_ORIGINS`를 실제 프론트엔드 주소로 설정합니다.
-     ```env
-     ALLOWED_ORIGINS=https://app.example.com,https://admin.example.com
-     ```
-   - 프론트엔드 `frontend/.env.local`에서 `NEXT_PUBLIC_API_URL`을 외부에서 접근 가능한 백엔드 URL로 설정합니다.
-     ```env
-     NEXT_PUBLIC_API_URL=https://api.example.com
-     ```
-
-2. **서버 바인딩**
-   - FastAPI는 `uvicorn.run(..., host="0.0.0.0")`로 실행되므로 외부 접속이 가능합니다.
-   - 방화벽/보안 그룹에서 8000(백엔드), 3000(프론트) 포트를 허용해야 합니다.
-
-3. **로컬 네트워크 접속**
-   - 모바일 등 같은 네트워크의 다른 기기에서 접속하려면 PC의 로컬 IP를 사용합니다.
-     - 백엔드: `http://<PC_IP>:8000`
-     - 프론트엔드: `http://<PC_IP>:3000`
-   - FastAPI CORS 설정은 192/10/172 대역 IP와 ngrok 도메인을 자동으로 허용합니다.
-
-4. **공인 도메인/HTTPS**
-   - 배포 환경에서는 프록시(예: Nginx)에서 SSL을 종료하고, 백엔드로 프록시합니다.
-   - 프론트엔드와 백엔드 모두 동일한 도메인(또는 `ALLOWED_ORIGINS`/`NEXT_PUBLIC_API_URL`로 명시된 도메인)을 사용해야 합니다.
-
-## 🔧 문제 해결
-
-### 로그인이 안 될 때
-1. **MongoDB 상태 확인**:
-   ```bash
-   netstat -ano | findstr :27017
-   ```
-
-2. **MongoDB 재시작**:
-   ```bash
-   net stop MongoDB
-   net start MongoDB
-   ```
-
-3. **서버 재시작**:
-   ```bash
-   # Ctrl+C로 서버 중지 후
-   python main.py
-   ```
-
-### 프론트엔드가 실행되지 않을 때
-1. **의존성 재설치**:
-   ```bash
-   cd frontend
-   rm -rf node_modules package-lock.json
-   npm install
-   ```
-
-2. **포트 확인**:
-   - 백엔드: 8000번 포트
-   - 프론트엔드: 3000번 포트
-
-### OpenAI API 오류
-- API 키가 올바른지 확인
-- 인터넷 연결 상태 확인
-- API 사용량 한도 확인
-
-### 음성 인식이 작동하지 않을 때
-- Chrome, Edge 등 최신 브라우저 사용
-- 마이크 권한 확인
-- HTTPS 또는 localhost에서만 작동
-
-# License
-  본 프로젝트는 MIT 라이선스를 지향합니다.
-
 ## 👥 팀원 및 역할 (Team Members)
 
 | 프로필 | 이름 / 역할 | 담당 업무 (R&R) | GitHub |
@@ -583,3 +501,7 @@ npm run dev
 | <img src="https://github.com/seol8852.png" width="90"> | **설범준**<br>팀장(Team Leader)<br>(PM) | **[Project Management]**<br>• 프로젝트 일정 관리 및 기획 총괄<br>• 서비스 요구사항 정의 및 명세서 작성<br>• 발표 자료 제작 및 문서화 | [![GitHub](https://img.shields.io/badge/GitHub-black?style=flat-square&logo=github)](https://github.com/seol8852) |
 | <img src="https://github.com/Lim-Dong-Kyu.png" width="90"> | **임동규**<br> 개발 총괄 <br>(Tech Lead) | **[Full Stack Development]**<br>• **Frontend**: Next.js 구조 설계, UI 구현, 음성 인터페이스<br>• **Backend**: FastAPI 서버 구축, DB 모델링, API 개발<br>• **AI**: K-LIWC 알고리즘 구현, 프롬프트 엔지니어링 | [![GitHub](https://img.shields.io/badge/GitHub-black?style=flat-square&logo=github)](https://github.com/Lim-Dong-Kyu) |
 | <img src="https://github.com/gkcodus3134.png" width="90"> | **하채연**<br>기획<br>(Service Planning) | **[Service Planning]**<br>• 노인 멘탈케어 서비스 시장 조사<br>• 서비스 QA 및 테스팅 | [![GitHub](https://img.shields.io/badge/GitHub-black?style=flat-square&logo=github)](https://github.com/gkcodus3134) |
+
+
+# License
+본 프로젝트는 MIT 라이선스를 지향합니다.
