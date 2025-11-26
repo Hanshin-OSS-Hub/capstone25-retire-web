@@ -3,6 +3,11 @@
 은퇴 후 시니어를 위한 **AI 챗봇 및 커리어 컨설팅 종합 멘탈케어 플랫폼**입니다.
 최신 AI 기술과 노인 친화적인 UI/UX를 결합하여, 어르신들의 정서적 안정과 제2의 인생 설계를 지원합니다.
 
+| 메인 | 대시보드 | 자가진단 | 챗봇 | 컨설팅 | 내역 |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/ea628458-ea04-4f6e-b460-3d3864c38ac9" width="150"/> | <img src="https://github.com/user-attachments/assets/c9ba4e9a-cdbe-450c-9b13-409c7003bf2b" width="150"/> | <img src="https://github.com/user-attachments/assets/b8a98e20-fa52-4605-b525-2cc0858e17ad" width="150"/> | <img src="https://github.com/user-attachments/assets/4f29e826-d4e4-406c-8015-aebb8575dbd5" width="150"/> | <img src="https://github.com/user-attachments/assets/13109a00-355e-4c36-a7ab-7cb7105395be" width="150"/> | <img src="https://github.com/user-attachments/assets/a8134cef-3b1b-4923-8097-b94847ffd6a5" width="150"/> |
+
+
 > **현재 상태**: 
 - ✅ 로그인 구현 완료 (bcrypt 호환성 문제 해결)
 - ✅ 챗봇 기능 구현 완료 (K-LIWC 기반 우울 수치 분석, 가중 평균 로직 적용)
