@@ -94,94 +94,95 @@
 
 ```mermaid
 graph TD
-%% 스타일 정의
-classDef user fill:#f9f9f9,stroke:#333,stroke-width:2px,color:black;
-classDef frontend fill:#e0f2f1,stroke:#2dd4bf,stroke-width:2px,color:black;
-classDef backend fill:#fff3e0,stroke:#fb923c,stroke-width:2px,color:black;
-classDef database fill:#e1bee7,stroke:#8e24aa,stroke-width:2px,color:black;
-classDef ai fill:#e3f2fd,stroke:#1e88e5,stroke-width:2px,stroke-dasharray: 5 5,color:black;
+    %% ────────────── 스타일 정의 ──────────────
+    classDef user fill:#212121,stroke:#000,stroke-width:0px,color:#fff;
+    classDef fe fill:#e0f7fa,stroke:#006064,stroke-width:2px,color:#006064;
+    classDef be fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100;
+    classDef db fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#4a148c;
+    classDef ext fill:#eceff1,stroke:#455a64,stroke-width:1px,stroke-dasharray: 5 5,color:#455a64;
+    
+    %% ────────────── 1. 사용자 ──────────────
+    User((👴 Senior User)):::user
 
-%% 1. 사용자 영역
-subgraph User_Zone ["User Environment"]
-    User(👴 Senior User)
-    Device[PC / Mobile / Tablet]
-end
+    %% ────────────── 2. 프론트엔드 (Next.js) ──────────────
+    subgraph Frontend_Layer ["🖥️ Presentation Layer (Next.js 16)"]
+        direction TB
+        
+        subgraph Browser_Runtime ["Browser Runtime"]
+            STT["🎤 Web Speech API<br/>(Client-side STT)"]
+            AudioPlayer["🔊 Audio Player<br/>(TTS Playback)"]
+        end
 
-%% 2. 클라이언트 사이드 (프론트엔드)
-subgraph Client_Side ["Frontend Layer - Next.js 16"]
-    direction TB
-    Browser[Web Browser]
-
-    subgraph Browser_Modules ["In-Browser Modules"]
-        UI["React UI Components<br/>(Tailwind CSS)"]
-        STT["🎤 Web Speech API<br/>(STT Engine)"]
-        Chart["Recharts<br/>Visualization"]
-    end
-end
-
-%% 3. 서버 사이드 (백엔드)
-subgraph Server_Side ["Backend Infrastructure - FastAPI"]
-    direction TB
-    APIGateway[API Endpoint / Router]
-
-    subgraph Logic_Core ["Core Logic"]
-        Auth["🔐 JWT & Bcrypt<br/>Auth Manager"]
-        KLIWC["🧠 K-LIWC<br/>Depression Analyzer"]
-        PromptEng["Prompt Engineering<br/>Context Manager"]
+        subgraph React_App ["React Application"]
+            UI["🎨 UI Components<br/>(Tailwind / Glassmorphism)"]
+            State["⚡ State Management<br/>(Chat History / Auth)"]
+            Chart["📊 Recharts<br/>(Depression Graph)"]
+        end
     end
 
-    Motor["⚙️ Motor<br/>Async Driver"]
-end
+    %% ────────────── 3. 백엔드 (FastAPI) ──────────────
+    subgraph Backend_Layer ["⚙️ Business Logic Layer (FastAPI)"]
+        direction TB
+        API_Gateway["📡 API Router<br/>(Endpoints)"]
 
-%% 4. 데이터베이스
-subgraph Data_Layer ["Data Persistence"]
-    MongoDB[("🍃 MongoDB<br/>NoSQL Database")]
-end
+        subgraph Service_Modules ["Core Services"]
+            Auth_Svc["🔐 Auth Service<br/>(JWT / Bcrypt)"]
+            Anal_Svc["🧠 K-LIWC Engine<br/>(Sentiment Analysis)"]
+            Career_Svc["💼 Career Consultant<br/>(Resume Parsing)"]
+            Prompt_Mgr["📝 Prompt Manager<br/>(Context Injection)"]
+        end
+        
+        DB_Handler["🔌 Motor Driver<br/>(Async ODM)"]
+    end
 
-%% 5. 외부 AI 서비스
-subgraph External_AI ["External AI Cloud Services"]
-    OpenAI["☁️ OpenAI API<br/>(GPT-3.5/4)"]
-    Supertone["☁️ Supertone API<br/>(Expressive TTS)"]
-end
+    %% ────────────── 4. 인프라 및 외부 서비스 ──────────────
+    subgraph Data_Layer ["💾 Data Persistence"]
+        MongoDB[("🍃 MongoDB<br/>(User / Chat / History)")]:::db
+    end
 
-%% 연결 관계 (Flow)
-User -->|Touch/Voice| Device
-Device -->|HTTPS| Browser
+    subgraph External_Services ["☁️ External AI Cloud"]
+        OpenAI["🤖 OpenAI API<br/>(LLM Generation)"]:::ext
+        Supertone["🗣️ Supertone API<br/>(Expressive TTS)"]:::ext
+    end
 
-%% 프론트엔드 내부 흐름
-Browser --> UI
-UI -- "Voice Input" --> STT
-STT -- "Text Data" --> UI
+    %% ────────────── 데이터 흐름 연결 ──────────────
+    %% 사용자 -> 프론트
+    User -->|Voice/Text| UI
+    
+    %% 프론트엔드 내부
+    UI --> STT
+    STT -->|Transcribed Text| UI
+    UI <-->|Update State| State
+    State --> Chart
+    UI --> AudioPlayer
 
-%% 백엔드 통신
-UI -- "REST API (JSON)" --> APIGateway
+    %% 프론트 -> 백엔드
+    UI == "REST Request (JSON)" ==> API_Gateway
 
-%% 백엔드 로직 흐름
-APIGateway --> Auth
-APIGateway --> PromptEng
-PromptEng --> KLIWC
+    %% 백엔드 라우팅
+    API_Gateway --> Auth_Svc
+    API_Gateway --> Anal_Svc
+    API_Gateway --> Career_Svc
 
-%% DB 연결
-Motor <--> MongoDB
-Auth -.-> Motor
-PromptEng -.-> Motor
+    %% 핵심 로직 흐름
+    Anal_Svc --> Prompt_Mgr
+    Career_Svc --> Prompt_Mgr
+    Prompt_Mgr -->|Contextualized Prompt| OpenAI
+    OpenAI -->|Raw Response| Prompt_Mgr
 
-%% 외부 AI 통신
-PromptEng -- "Analysis Request" --> OpenAI
-OpenAI -- "Persona Response" --> PromptEng
+    %% TTS 생성 흐름
+    API_Gateway -.->|Text for Speech| Supertone
+    Supertone -.->|Audio Stream| AudioPlayer
 
-APIGateway -- "Text Response" --> Supertone
-Supertone -- "Audio Stream" --> APIGateway
+    %% 데이터 저장 흐름
+    Auth_Svc --> DB_Handler
+    Anal_Svc --> DB_Handler
+    Career_Svc --> DB_Handler
+    DB_Handler <==> MongoDB
 
-%% 최종 응답
-APIGateway -- "Response (Text + Audio + Score)" --> UI
-
-%% 클래스 적용
-class User,Device user;
-class Browser,UI,STT,Chart frontend;
-class APIGateway,Auth,KLIWC,PromptEng,Motor backend;
-class MongoDB database;
-class OpenAI,Supertone ai;
+    %% 스타일 적용
+    class STT,AudioPlayer,UI,State,Chart fe;
+    class API_Gateway,Auth_Svc,Anal_Svc,Career_Svc,Prompt_Mgr,DB_Handler be;
 ```
 
 ---
