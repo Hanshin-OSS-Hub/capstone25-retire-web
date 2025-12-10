@@ -65,6 +65,14 @@ async def check_mongodb_connection():
         await client.server_info()
         print(f"[SUCCESS] MongoDB 연결 성공: {MONGODB_URL}")
         print(f"[SUCCESS] 데이터베이스: {DATABASE_NAME}")
+        
+        # 이메일만 unique 인덱스 생성 (사용자명은 중복 허용)
+        try:
+            await db.users.create_index("email", unique=True)
+            print("✅ 사용자 이메일 unique 인덱스 생성 완료")
+        except Exception as e:
+            print(f"⚠️ 인덱스 생성 중 오류 (이미 존재할 수 있음): {e}")
+        
         return True
     except Exception as e:
         print(f"[ERROR] MongoDB 연결 실패!")
@@ -425,7 +433,8 @@ async def generate_chatbot_response(message: str, depression_score: float, phq_r
         3. 실용적이고 구체적인 조언을 제공하세요
         4. 필요시 전문적인 도움을 권하세요
         5. 응답은 한국어로 해주세요
-        6. 응답은 충분히 상세하고 도움이 되도록 작성하되, 너무 길지 않게 적절한 길이로 작성해주세요
+        6. 응답은 2-3문장 정도로 간결하게 작성해주세요 (너무 길지 않게)
+        7. 응답 마지막에 사용자에게 질문을 하거나 대화를 계속 이어가도록 자연스럽게 유도해주세요
         
         {phq_context}
         사용자 메시지: "{message}"
@@ -436,7 +445,7 @@ async def generate_chatbot_response(message: str, depression_score: float, phq_r
         response = call_openai_api(
             messages=[{"role": "user", "content": prompt}],
             model="gpt-3.5-turbo",
-            max_tokens=500,  # 더 긴 응답을 받을 수 있도록 증가
+            max_tokens=300,  # 대화 길이를 줄이기 위해 토큰 수 감소
             temperature=0.7
         )
         
@@ -612,15 +621,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 # API 엔드포인트들
 @app.post("/api/signup", response_model=UserResponse)
 async def signup(user: UserCreate):
-    # 중복 사용자 확인
-    existing_user = await db.users.find_one({
-        "$or": [{"email": user.email}, {"username": user.username}]
-    })
+    # 이메일 중복 확인 (사용자명은 중복 허용)
+    existing_user = await db.users.find_one({"email": user.email})
     
     if existing_user:
         raise HTTPException(
             status_code=400,
-            detail="이미 존재하는 이메일 또는 사용자명입니다."
+            detail="이미 존재하는 이메일입니다."
         )
     
     # 새 사용자 생성
@@ -628,6 +635,12 @@ async def signup(user: UserCreate):
         created_user = await create_user(user)
         return UserResponse(**created_user)
     except Exception as e:
+        # MongoDB duplicate key error 처리 (이메일 unique 인덱스)
+        if "duplicate key" in str(e).lower() or "E11000" in str(e):
+            raise HTTPException(
+                status_code=400,
+                detail="이미 존재하는 이메일입니다."
+            )
         raise HTTPException(
             status_code=500,
             detail="사용자 생성 중 오류가 발생했습니다."

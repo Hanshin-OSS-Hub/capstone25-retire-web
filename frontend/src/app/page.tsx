@@ -17,7 +17,8 @@ export default function Home() {
         router.push('/dashboard');
       }
     }
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // router 의존성 제거 - 마운트 시 한 번만 실행 (ngrok 환경 대응)
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-creamy-white">
